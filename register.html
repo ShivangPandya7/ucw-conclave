@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request an Invitation — UpperCrust Wealth Conclave</title>
+<link rel="stylesheet" href="assets/styles.css?v=7">
+<style>
+  .form-card{width:100%;max-width:520px;padding:40px 38px;}
+  .form-header{text-align:center;margin-bottom:22px;}
+  .form-header h2{font-size:22px;color:var(--gold-text);letter-spacing:.5px;margin-bottom:8px;}
+  .form-header p{font-size:12.5px;color:var(--text-dim);line-height:1.6;}
+
+  /* ---- Step progress ---- */
+  .step-progress{margin-bottom:26px;}
+  .step-progress-track{height:5px;background:rgba(125,87,38,.15);border-radius:3px;overflow:hidden;}
+  .step-progress-fill{height:100%;width:12.5%;border-radius:3px;
+    background:linear-gradient(90deg,var(--gold-2),var(--gold-3));transition:width .45s ease;}
+  .step-progress-label{margin-top:7px;font-size:11px;letter-spacing:.5px;color:var(--text-faint);text-align:right;}
+
+  .input-group{margin-bottom:15px;text-align:left;}
+  .input-group label{display:block;font-size:11px;letter-spacing:1px;color:#4a4130;
+    margin-bottom:6px;text-transform:uppercase;}
+  .input-group input,.input-group select,.input-group textarea{
+    width:100%;padding:12px 14px;background:linear-gradient(135deg,#e6c07f,#c8965a);
+    border:1px solid rgba(125,87,38,.5);
+    border-radius:8px;color:#000;font-size:13.5px;outline:none;transition:all .25s ease;font-family:inherit;}
+  .input-group input::placeholder,.input-group textarea::placeholder{color:rgba(0,0,0,.55);}
+  .input-group textarea{resize:vertical;min-height:70px;}
+  .input-group select option{background:#e6c07f;color:#000;}
+  .input-group input:focus,.input-group select:focus,.input-group textarea:focus{
+    border-color:var(--gold-4);box-shadow:0 0 10px rgba(168,118,60,.35);background:linear-gradient(135deg,#edd09a,#d4a86a);}
+
+  /* honeypot — hidden from real users, catches simple bots */
+  .hp{position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;}
+
+  /* ---- Step wizard: one field visible at a time ---- */
+  .form-step{display:none;}
+  .form-step.active{display:block;animation:step-in .4s ease;}
+  @keyframes step-in{
+    from{opacity:0;transform:translateX(18px);}
+    to{opacity:1;transform:translateX(0);}
+  }
+  .step-nav{display:flex;gap:10px;margin-top:6px;}
+  .step-back-btn{flex:0 0 auto;}
+  .step-next-btn{flex:1;}
+
+  /* base shiny gold styling comes from styles.css's shared .submit-btn rule */
+  .submit-btn{width:100%;border-radius:8px;font-size:13px;letter-spacing:1px;margin-top:0;}
+  .submit-btn[disabled]{cursor:wait;}
+  .step-next-btn{border-radius:8px;font-size:13px;letter-spacing:1px;padding:12px 20px;}
+
+  .back-link{display:block;text-align:center;margin-top:18px;font-size:12px;color:var(--text-faint);text-decoration:none;}
+  .back-link:hover{color:var(--gold-text);}
+
+  .result-msg{display:none;text-align:center;font-size:13px;margin-top:14px;line-height:1.6;padding:12px;border-radius:8px;}
+  .result-msg.success{color:#166534;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);}
+  .result-msg.error{color:#991b1b;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);}
+
+  /* ---- Submitted state: form fades out, thank-you copy replaces it ---- */
+  #regForm.submitted .form-step,
+  #regForm.submitted .step-progress{display:none;}
+  .submitted-panel{display:none;text-align:center;}
+  #regForm.submitted .submitted-panel{display:block;}
+  .submitted-panel .check{font-size:40px;color:var(--gold-text);margin-bottom:10px;}
+  .submitted-panel h3{font-size:19px;color:var(--gold-text);margin-bottom:10px;letter-spacing:.3px;}
+  .submitted-panel p{font-size:13px;color:var(--text-dim);line-height:1.7;}
+
+  /* ---- Coin shower celebration ---- */
+  .coin-shower{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden;}
+  .shower-coin{position:absolute;top:-40px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff3c9, #e6c07f 45%, #a8763c 80%, #7d5726 100%);
+    box-shadow:0 0 6px rgba(168,118,60,.55),inset 0 0 4px rgba(255,255,255,.65);
+    animation-name:coin-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;}
+  @keyframes coin-fall{
+    0%{transform:translateY(-10vh) rotate(0deg);opacity:0;}
+    8%{opacity:1;}
+    100%{transform:translateY(110vh) rotate(var(--rot));opacity:1;}
+  }
+  .thanks-overlay{position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;opacity:0;transition:opacity .5s ease;
+    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.6),transparent 65%);}
+  .thanks-overlay.show{opacity:1;}
+  .thanks-overlay .thanks-text{font-family:Georgia,serif;font-size:34px;letter-spacing:7px;text-transform:uppercase;
+    color:#8a6416;text-shadow:0 0 24px rgba(255,255,255,.95);
+    opacity:0;transform:scale(.85);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1);}
+  .thanks-overlay.show .thanks-text{opacity:1;transform:scale(1);}
+  @media (max-width:640px){
+    .thanks-overlay .thanks-text{font-size:22px;letter-spacing:4px;}
+  }
+</style>
+</head>
+<body>
+
+  <div id="wave-bg">
+    <svg viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#fffdf8"/>
+          <stop offset="100%" stop-color="#f2ddac"/>
+        </linearGradient>
+        <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#eec583"/>
+          <stop offset="100%" stop-color="#c89a56"/>
+        </linearGradient>
+        <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#dcab5e"/>
+          <stop offset="100%" stop-color="#b3823c"/>
+        </linearGradient>
+        <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#a8763c"/>
+          <stop offset="100%" stop-color="#7d5726"/>
+        </linearGradient>
+      </defs>
+      <path class="wv1" fill="url(#wg1)" opacity="0.9" d="M0,240 C240,170 480,310 720,240 C960,170 1200,310 1440,240 L1440,800 L0,800 Z"/>
+      <path class="wv2" fill="url(#wg2)" opacity="0.85" d="M0,370 C260,300 420,440 680,380 C920,320 1180,460 1440,390 L1440,800 L0,800 Z"/>
+      <path class="wv3" fill="url(#wg3)" opacity="0.82" d="M0,510 C240,590 480,450 720,510 C960,570 1200,430 1440,500 L1440,800 L0,800 Z"/>
+      <path class="wv4" fill="url(#wg4)" opacity="0.8" d="M0,650 C260,580 480,700 740,650 C980,605 1200,715 1440,660 L1440,800 L0,800 Z"/>
+    </svg>
+  </div>
+
+  <div class="content-overlay">
+    <nav>
+      <div class="nav-logo"><img src="assets/ucw-logo.png" alt="UpperCrust Wealth"></div>
+      <div class="nav-links">
+        <a class="link-ghost" href="index.html">← Back to Overview</a>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="form-card card reveal is-visible">
+        <div class="form-header">
+          <h2>Request an Invitation</h2>
+          <p>UpperCrust Wealth Conclave · 2026 Edition</p>
+        </div>
+
+        <form id="regForm" autocomplete="off">
+          <!-- honeypot field -->
+          <div class="hp"><label>Leave blank</label><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+
+          <div class="step-progress">
+            <div class="step-progress-track"><div class="step-progress-fill" id="stepProgressFill"></div></div>
+            <div class="step-progress-label" id="stepProgressLabel">Step 1 of 8</div>
+          </div>
+
+          <div class="form-step active" data-step="0">
+            <div class="input-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" required placeholder="Jane Doe">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="1">
+            <div class="input-group">
+              <label for="email">Work Email</label>
+              <input type="email" id="email" required placeholder="jane@firm.com">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="2">
+            <div class="input-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" required placeholder="+91 98765 43210">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <div class="input-group">
+              <label for="organization">Organization / Firm</label>
+              <input type="text" id="organization" required placeholder="Capital Management Inc.">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="4">
+            <div class="input-group">
+              <label for="designation">Designation / Title</label>
+              <input type="text" id="designation" required placeholder="Managing Director">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="5">
+            <div class="input-group">
+              <label for="city">City</label>
+              <input type="text" id="city" required placeholder="Mumbai">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="6">
+            <div class="input-group">
+              <label for="referredBy">Referred By (optional)</label>
+              <input type="text" id="referredBy" placeholder="Name, if applicable">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="7">
+            <div class="input-group">
+              <label for="notes">Anything else we should know? (optional)</label>
+              <textarea id="notes" placeholder="Brief note on your interest in attending"></textarea>
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="submit" class="submit-btn step-next-btn" id="submitBtn">Submit Application</button>
+            </div>
+          </div>
+
+          <div class="submitted-panel">
+            <div class="check">✓</div>
+            <h3>Application Received</h3>
+            <p>Our team will review it and follow up by email if a seat becomes
+              available — this is not a confirmed reservation.</p>
+          </div>
+
+          <a href="index.html" class="back-link">← Back to overview</a>
+
+          <div id="errorMsg" class="result-msg error">
+            Something went wrong sending your application. Please try again, or email
+            events@uppercrustwealth.com directly.
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div></div>
+
+  <script>
+    // ---- Apps Script Web App endpoint (see apps-script/Code.gs + SETUP.md) ----
+    const ENDPOINT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const form = document.getElementById('regForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const thanksOverlay = document.getElementById('thanksOverlay');
+
+    // ---- Step wizard: reveal one field at a time ----
+    const steps = Array.from(document.querySelectorAll('.form-step'));
+    const totalSteps = steps.length;
+    const progressFill = document.getElementById('stepProgressFill');
+    const progressLabel = document.getElementById('stepProgressLabel');
+    let current = 0;
+
+    function showStep(i) {
+      steps.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      progressFill.style.width = ((i + 1) / totalSteps) * 100 + '%';
+      progressLabel.textContent = `Step ${i + 1} of ${totalSteps}`;
+      const input = steps[i].querySelector('input, textarea');
+      if (input) setTimeout(() => input.focus(), 50);
+    }
+
+    function goNext() {
+      const input = steps[current].querySelector('input, textarea');
+      if (input && input.hasAttribute('required') && !input.checkValidity()) {
+        input.reportValidity();
+        return;
+      }
+      if (current < totalSteps - 1) {
+        current++;
+        showStep(current);
+      }
+    }
+
+    function goBack() {
+      if (current > 0) {
+        current--;
+        showStep(current);
+      }
+    }
+
+    steps.forEach((step) => {
+      const nextBtn = step.querySelector('.step-next-btn:not([type="submit"])');
+      const backBtn = step.querySelector('.step-back-btn');
+      if (nextBtn) nextBtn.addEventListener('click', goNext);
+      if (backBtn) backBtn.addEventListener('click', goBack);
+      const input = step.querySelector('input');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); goNext(); }
+        });
+      }
+    });
+
+    showStep(0);
+
+    // ---- Coin shower + "Thank You" celebration on successful submit ----
+    function spawnCoinShower(count) {
+      const layer = document.createElement('div');
+      layer.className = 'coin-shower';
+      document.body.appendChild(layer);
+      for (let i = 0; i < count; i++) {
+        const coin = document.createElement('div');
+        coin.className = 'shower-coin';
+        const size = 12 + Math.random() * 14;
+        const duration = 2.2 + Math.random() * 1.6;
+        const delay = Math.random() * 1.1;
+        const rotDeg = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 260);
+        coin.style.left = Math.random() * 100 + 'vw';
+        coin.style.width = size + 'px';
+        coin.style.height = size + 'px';
+        coin.style.animationDuration = duration + 's';
+        coin.style.animationDelay = delay + 's';
+        coin.style.setProperty('--rot', rotDeg + 'deg');
+        layer.appendChild(coin);
+      }
+      setTimeout(() => layer.remove(), 4200);
+    }
+
+    function celebrateSuccess() {
+      spawnCoinShower(46);
+      setTimeout(() => spawnCoinShower(30), 400);
+      thanksOverlay.classList.add('show');
+      setTimeout(() => thanksOverlay.classList.remove('show'), 3600);
+      form.classList.add('submitted');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+
+      // honeypot check
+      if (form.website.value) return;
+
+      if (ENDPOINT_URL.indexOf('PASTE_YOUR') === 0) {
+        errorMsg.textContent = 'Form is not connected to a database yet — see SETUP.md (ENDPOINT_URL in register.html).';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const payload = {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        organization: document.getElementById('organization').value.trim(),
+        designation: document.getElementById('designation').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        referredBy: document.getElementById('referredBy').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        guestCategory: 'Prospective Guest',
+        source: 'conclave-site',
+        submittedAt: new Date().toISOString()
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      // text/plain avoids a CORS preflight against Apps Script web apps
+      fetch(ENDPOINT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.result === 'success') {
+            form.reset();
+            celebrateSuccess();
+          } else {
+            throw new Error((data && data.error) || 'Unknown error');
+          }
+        })
+        .catch(() => {
+          errorMsg.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Application';
+        });
+    });
+  </script>
+</body>
+</html>

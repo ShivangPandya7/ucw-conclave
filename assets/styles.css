@@ -1,0 +1,126 @@
+:root{
+  --gold-1:#e6c07f;
+  --gold-2:#c8965a;
+  --gold-3:#a8763c;
+  --gold-4:#7d5726;
+  --gold-text:#a8763c;
+  --ivory:#fbf9f4;
+  --bg:#f7f4ee;
+  --panel:rgba(255,253,249,.82);
+  --panel-strong:rgba(255,253,249,.92);
+  --border:rgba(168,118,60,.32);
+  --ink:#1c1712;
+  --text-dim:#453d31;
+  --text-faint:#7a7160;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ink);font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;overflow-x:hidden;}
+
+/* ---- Animated ivory + gold wave background ---- */
+#wave-bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;overflow:hidden;
+  background:linear-gradient(180deg,#fbf9f4 0%,#f7f3ea 55%,#f2ece0 100%);}
+#wave-bg svg{position:absolute;top:50%;left:50%;width:115%;height:115%;
+  transform:translate(-50%,-50%) rotate(-3deg);}
+#wave-bg svg path{transform-box:fill-box;transform-origin:50% 50%;}
+#wave-bg .wv1{animation:wave-drift-1 26s ease-in-out infinite;}
+#wave-bg .wv2{animation:wave-drift-2 21s ease-in-out infinite;}
+#wave-bg .wv3{animation:wave-drift-3 30s ease-in-out infinite;}
+#wave-bg .wv4{animation:wave-drift-4 24s ease-in-out infinite;}
+@keyframes wave-drift-1{
+  0%,100%{transform:translate(-2%,-1%) scale(1.02);}
+  50%{transform:translate(2%,1.5%) scale(1.05);}
+}
+@keyframes wave-drift-2{
+  0%,100%{transform:translate(2%,1%) scale(1.03);}
+  50%{transform:translate(-3%,-1.5%) scale(1);}
+}
+@keyframes wave-drift-3{
+  0%,100%{transform:translate(-1.5%,1.2%) scale(1.02);}
+  50%{transform:translate(2.5%,-1%) scale(1.06);}
+}
+@keyframes wave-drift-4{
+  0%,100%{transform:translate(1.8%,-1.3%) scale(1.04);}
+  50%{transform:translate(-2.2%,1.4%) scale(1);}
+}
+
+.content-overlay{position:relative;z-index:2;width:100%;min-height:100vh;}
+
+/* Nav */
+nav{
+  width:100%;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(255,253,247,.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  position:fixed;top:0;left:0;z-index:20;
+}
+.nav-logo img{height:38px;width:auto;display:block;}
+.nav-links{display:flex;gap:10px;align-items:center;}
+.nav-links a.btn-outline{
+  border:1px solid rgba(169,126,31,.5);color:var(--gold-text);padding:9px 20px;border-radius:22px;
+  font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;
+  text-decoration:none;transition:all .25s ease;white-space:nowrap;
+}
+.nav-links a.btn-outline:hover{background:rgba(169,126,31,.12);border-color:var(--gold-text);}
+.nav-links a.link-ghost{color:var(--text-dim);font-size:12.5px;text-decoration:none;}
+.nav-links a.link-ghost:hover{color:var(--gold-text);}
+
+/* Page shell */
+.page{width:100%;min-height:100vh;padding:120px 20px 80px;display:flex;flex-direction:column;align-items:center;}
+
+/* Cards */
+.card{
+  background:var(--panel);backdrop-filter:blur(20px);border:1px solid var(--border);
+  border-radius:22px;box-shadow:0 25px 60px rgba(138,100,22,.18),0 0 40px rgba(169,126,31,.08);
+}
+
+/* Reveal-on-scroll */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.is-visible{opacity:1;transform:translateY(0);}
+
+/* Buttons */
+/* The primary registration CTA (.cta-btn on the landing page, .submit-btn on
+   the form) gets an extra-shiny treatment: a richer multi-stop gold gradient,
+   a glossy inset highlight, and a diagonal light sweep that loops so the
+   button always reads as the most eye-catching thing on the page. */
+.cta-btn,.submit-btn{
+  position:relative;overflow:hidden;isolation:isolate;
+  background:linear-gradient(135deg,#fff4cd 0%,#f8dd93 13%,#eec167 27%,#d9a24f 40%,#c8965a 53%,#a8763c 70%,#8c6420 85%,#c8965a 100%);
+  border:1px solid rgba(255,244,210,.75);
+  border-radius:30px;color:#1c1712;padding:16px 42px;font-size:14px;font-weight:700;
+  text-transform:uppercase;letter-spacing:2px;cursor:pointer;transition:all .3s ease;
+  box-shadow:0 8px 32px rgba(168,118,60,.55),0 0 42px rgba(230,180,90,.3),
+    inset 0 2px 1px rgba(255,255,255,.9),inset 0 -4px 8px rgba(80,50,10,.35);
+  text-decoration:none;display:inline-block;text-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.cta-btn::before,.submit-btn::before{
+  content:'';position:absolute;top:-60%;left:-80%;width:16%;height:220%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.95),transparent);
+  transform:rotate(20deg);animation:btn-shine 3.2s ease-in-out infinite;pointer-events:none;
+}
+.cta-btn::after,.submit-btn::after{
+  content:'';position:absolute;top:-60%;left:-60%;width:34%;height:220%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:rotate(20deg);animation:btn-shine 3.2s ease-in-out infinite;animation-delay:.35s;pointer-events:none;
+}
+@keyframes btn-shine{
+  0%{left:-80%;}
+  45%{left:130%;}
+  100%{left:130%;}
+}
+.cta-btn:hover,.submit-btn:hover{
+  transform:translateY(-3px);filter:brightness(1.08) saturate(1.1);
+  box-shadow:0 14px 42px rgba(168,118,60,.65),0 0 56px rgba(230,180,90,.4),
+    inset 0 2px 1px rgba(255,255,255,.95),inset 0 -4px 8px rgba(80,50,10,.35);
+}
+.cta-btn:active,.submit-btn:active{transform:translateY(-1px);}
+.cta-btn[disabled],.submit-btn[disabled]{opacity:.6;cursor:not-allowed;transform:none;}
+
+.ghost-btn{background:transparent;border:1px solid rgba(26,20,8,.15);color:var(--text-dim);
+  border-radius:24px;padding:12px 26px;font-size:12.5px;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;display:inline-block;transition:all .25s ease;}
+.ghost-btn:hover{border-color:var(--gold-text);color:var(--gold-text);}
+
+@media (max-width:640px){
+  nav{padding:14px 18px;}
+  .nav-links a.btn-outline{padding:8px 14px;font-size:11px;}
+  .page{padding:100px 16px 60px;}
+}
