@@ -68,10 +68,21 @@
 
   /* ---- Coin shower celebration ---- */
   .coin-shower{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden;}
+  /* layered gradient + rim ring + strong highlight/shadow pairing reads as a
+     minted, embossed disc rather than a flat gradient circle */
   .shower-coin{position:absolute;top:-40px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #fff3c9, #e6c07f 45%, #a8763c 80%, #7d5726 100%);
-    box-shadow:0 0 6px rgba(168,118,60,.55),inset 0 0 4px rgba(255,255,255,.65);
+    background:radial-gradient(circle at 30% 26%,
+      #fffaea 0%, #fff0bd 10%, #f6d383 26%, #e0ab5c 44%,
+      #c1893f 62%, #96692a 80%, #6e4c1c 94%, #52380f 100%);
+    box-shadow:
+      0 4px 8px rgba(50,32,8,.5),
+      0 1px 0 1px rgba(120,80,25,.6),
+      inset 0 2px 2px rgba(255,255,255,.85),
+      inset 0 -3px 4px rgba(70,45,12,.65);
     animation-name:coin-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;}
+  .shower-coin::after{content:'';position:absolute;inset:16%;border-radius:50%;
+    border:1px solid rgba(255,248,220,.5);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -1px 2px rgba(60,38,10,.55);}
   @keyframes coin-fall{
     0%{transform:translateY(-10vh) rotate(0deg);opacity:0;}
     8%{opacity:1;}
