@@ -54,10 +54,15 @@ function doPost(e) {
 
     const sheet = getSheet_();
 
-    // simple de-dupe: same email already applied
-    const existingEmails = sheet.getRange(2, 3, Math.max(sheet.getLastRow() - 1, 0), 1).getValues().flat();
-    if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
-      return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+    // simple de-dupe: same email already applied (only the header row exists
+    // before the first submission, so skip the check rather than requesting
+    // a 0-row range, which Apps Script rejects)
+    const lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      const existingEmails = sheet.getRange(2, 3, lastRow - 1, 1).getValues().flat();
+      if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
+        return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+      }
     }
 
     sheet.appendRow([
