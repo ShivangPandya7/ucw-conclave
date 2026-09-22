@@ -386,14 +386,25 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.result === 'success') {
-            form.reset();
-            celebrateSuccess();
-          } else {
-            throw new Error((data && data.error) || 'Unknown error');
+        .then(async (res) => {
+          // Apps Script writes the row to the Sheet before it finishes
+          // sending a response, and its response occasionally isn't valid
+          // JSON by the time it reaches fetch (a cold-start/redirect quirk
+          // on Google's side) even though the write already succeeded. So:
+          // a genuine HTTP failure is always an error, but an unparseable
+          // body on an otherwise-OK response is treated as success rather
+          // than incorrectly showing an error after the data was saved.
+          let data = null;
+          try {
+            data = JSON.parse(await res.text());
+          } catch (parseErr) {
+            data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status };
           }
+          if (data && data.result === 'error') {
+            throw new Error(data.error || 'Unknown error');
+          }
+          form.reset();
+          celebrateSuccess();
         })
         .catch(() => {
           errorMsg.style.display = 'block';
