@@ -151,12 +151,12 @@
 
           <div class="step-progress">
             <div class="step-progress-track"><div class="step-progress-fill" id="stepProgressFill"></div></div>
-            <div class="step-progress-label" id="stepProgressLabel">Step 1 of 8</div>
+            <div class="step-progress-label" id="stepProgressLabel">Step 1 of 7</div>
           </div>
 
           <div class="form-step active" data-step="0">
             <div class="input-group">
-              <label for="fullName">Full Name</label>
+              <label for="fullName">Might I ask your name?</label>
               <input type="text" id="fullName" required placeholder="Jane Doe">
             </div>
             <div class="step-nav">
@@ -166,8 +166,8 @@
 
           <div class="form-step" data-step="1">
             <div class="input-group">
-              <label for="email">Work Email</label>
-              <input type="email" id="email" required placeholder="jane@firm.com">
+              <label for="phone">Where can we reach you directly?</label>
+              <input type="tel" id="phone" required placeholder="+91 98765 43210">
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -177,8 +177,8 @@
 
           <div class="form-step" data-step="2">
             <div class="input-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" required placeholder="+91 98765 43210">
+              <label for="email">Where shall correspondence find you?</label>
+              <input type="email" id="email" required placeholder="jane@firm.com">
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -188,8 +188,15 @@
 
           <div class="form-step" data-step="3">
             <div class="input-group">
-              <label for="organization">Organization / Firm</label>
-              <input type="text" id="organization" required placeholder="Capital Management Inc.">
+              <label for="capitalPriority">When you decide on capital, what matters first?</label>
+              <select id="capitalPriority" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="Conviction">Conviction</option>
+                <option value="Downside protection">Downside protection</option>
+                <option value="Compounding growth">Compounding growth</option>
+                <option value="Access others don't have">Access others don't have</option>
+                <option value="Speed to move">Speed to move</option>
+              </select>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -199,8 +206,15 @@
 
           <div class="form-step" data-step="4">
             <div class="input-group">
-              <label for="designation">Designation / Title</label>
-              <input type="text" id="designation" required placeholder="Managing Director">
+              <label for="capitalLocation">Today, where does your capital spend most of its time?</label>
+              <select id="capitalLocation" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="Own business">Own business</option>
+                <option value="Public markets">Public markets</option>
+                <option value="Private markets/alternatives">Private markets/alternatives</option>
+                <option value="Real estate">Real estate</option>
+                <option value="Spread across all">Spread across all</option>
+              </select>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -210,8 +224,14 @@
 
           <div class="form-step" data-step="5">
             <div class="input-group">
-              <label for="city">City</label>
-              <input type="text" id="city" required placeholder="Mumbai">
+              <label for="involvement">How involved are you in managing it, day to day?</label>
+              <select id="involvement" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="I decide everything myself">I decide everything myself</option>
+                <option value="I decide with an advisor">I decide with an advisor</option>
+                <option value="I have a family office/team">I have a family office/team</option>
+                <option value="I largely delegate it">I largely delegate it</option>
+              </select>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -221,19 +241,14 @@
 
           <div class="form-step" data-step="6">
             <div class="input-group">
-              <label for="referredBy">Referred By (optional)</label>
-              <input type="text" id="referredBy" placeholder="Name, if applicable">
-            </div>
-            <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="7">
-            <div class="input-group">
-              <label for="notes">Anything else we should know? (optional)</label>
-              <textarea id="notes" placeholder="Brief note on your interest in attending"></textarea>
+              <label for="eveningIntent">What would make this evening worth your time?</label>
+              <select id="eveningIntent" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="New capital opportunities">New capital opportunities</option>
+                <option value="Ideas & perspective">Ideas &amp; perspective</option>
+                <option value="The room itself (who's in it)">The room itself (who's in it)</option>
+                <option value="A specific introduction">A specific introduction</option>
+              </select>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -281,14 +296,14 @@
       steps.forEach((s, idx) => s.classList.toggle('active', idx === i));
       progressFill.style.width = ((i + 1) / totalSteps) * 100 + '%';
       progressLabel.textContent = `Step ${i + 1} of ${totalSteps}`;
-      const input = steps[i].querySelector('input, textarea');
-      if (input) setTimeout(() => input.focus(), 50);
+      const field = steps[i].querySelector('input, select, textarea');
+      if (field) setTimeout(() => field.focus(), 50);
     }
 
     function goNext() {
-      const input = steps[current].querySelector('input, textarea');
-      if (input && input.hasAttribute('required') && !input.checkValidity()) {
-        input.reportValidity();
+      const field = steps[current].querySelector('input, select, textarea');
+      if (field && field.hasAttribute('required') && !field.checkValidity()) {
+        field.reportValidity();
         return;
       }
       if (current < totalSteps - 1) {
@@ -314,6 +329,11 @@
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') { e.preventDefault(); goNext(); }
         });
+      }
+      const select = step.querySelector('select');
+      if (select) {
+        // picking an option advances automatically, typeform-style
+        select.addEventListener('change', () => setTimeout(goNext, 200));
       }
     });
 
@@ -418,14 +438,12 @@
 
       const payload = {
         fullName: document.getElementById('fullName').value.trim(),
-        email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
-        organization: document.getElementById('organization').value.trim(),
-        designation: document.getElementById('designation').value.trim(),
-        city: document.getElementById('city').value.trim(),
-        referredBy: document.getElementById('referredBy').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-        guestCategory: 'Prospective Guest',
+        email: document.getElementById('email').value.trim(),
+        capitalPriority: document.getElementById('capitalPriority').value,
+        capitalLocation: document.getElementById('capitalLocation').value,
+        involvement: document.getElementById('involvement').value,
+        eveningIntent: document.getElementById('eveningIntent').value,
         source: 'conclave-site',
         submittedAt: new Date().toISOString()
       };

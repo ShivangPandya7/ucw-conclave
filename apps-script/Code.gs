@@ -7,8 +7,8 @@
 
 const SHEET_NAME = 'Registrations';
 const HEADERS = [
-  'Timestamp', 'Full Name', 'Email', 'Phone', 'Organization', 'Designation',
-  'City', 'Referred By', 'Notes', 'Guest Category', 'Status', 'Source', 'IP/User-Agent'
+  'Timestamp', 'Full Name', 'Phone', 'Email', 'Capital Priority',
+  'Capital Focus', 'Involvement', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent'
 ];
 
 function getSheet_() {
@@ -42,7 +42,7 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
 
     // honeypot / basic bot check happens client-side; re-validate required fields here
-    const required = ['fullName', 'email', 'phone', 'organization', 'designation', 'city'];
+    const required = ['fullName', 'phone', 'email', 'capitalPriority', 'capitalLocation', 'involvement', 'eveningIntent'];
     for (const field of required) {
       if (!data[field] || String(data[field]).trim() === '') {
         return jsonOut_({ result: 'error', error: 'Missing field: ' + field });
@@ -59,7 +59,7 @@ function doPost(e) {
     // a 0-row range, which Apps Script rejects)
     const lastRow = sheet.getLastRow();
     if (lastRow > 1) {
-      const existingEmails = sheet.getRange(2, 3, lastRow - 1, 1).getValues().flat();
+      const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues().flat();
       if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
         return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
       }
@@ -68,14 +68,12 @@ function doPost(e) {
     sheet.appendRow([
       new Date(),
       data.fullName || '',
-      data.email || '',
       data.phone || '',
-      data.organization || '',
-      data.designation || '',
-      data.city || '',
-      data.referredBy || '',
-      data.notes || '',
-      data.guestCategory || 'Prospective Guest',
+      data.email || '',
+      data.capitalPriority || '',
+      data.capitalLocation || '',
+      data.involvement || '',
+      data.eveningIntent || '',
       'Pending Review',
       data.source || '',
       ''
