@@ -8,7 +8,7 @@
 const SHEET_NAME = 'Registrations';
 const HEADERS = [
   'Timestamp', 'Full Name', 'Phone', 'Email', 'Capital Priority',
-  'Capital Focus', 'Involvement', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent'
+  'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent'
 ];
 
 function getSheet_() {
@@ -42,7 +42,7 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
 
     // honeypot / basic bot check happens client-side; re-validate required fields here
-    const required = ['fullName', 'phone', 'email', 'capitalPriority', 'capitalLocation', 'involvement', 'eveningIntent'];
+    const required = ['fullName', 'phone', 'email', 'capitalPriority', 'capitalLocation', 'capitalScale', 'eveningIntent'];
     for (const field of required) {
       if (!data[field] || String(data[field]).trim() === '') {
         return jsonOut_({ result: 'error', error: 'Missing field: ' + field });
@@ -72,7 +72,7 @@ function doPost(e) {
       data.email || '',
       data.capitalPriority || '',
       data.capitalLocation || '',
-      data.involvement || '',
+      data.capitalScale || '',
       data.eveningIntent || '',
       'Pending Review',
       data.source || '',

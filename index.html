@@ -49,7 +49,8 @@
   .cover-tagline{font-family:Georgia,serif;font-style:italic;font-size:clamp(15px,2.3vw,22px);
     color:#5b5346;margin-bottom:44px;line-height:1.5;}
   .cover-meta{margin-bottom:64px;}
-  .cover-date{font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--cover-ink);margin-bottom:12px;}
+  .cover-date{font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--cover-ink);margin-bottom:10px;}
+  .cover-venue{font-size:clamp(11px,1.4vw,13px);letter-spacing:.2em;color:var(--cover-muted);margin-bottom:14px;}
   .cover-seats{font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--cover-muted);}
   .enter-room-link{display:inline-flex;align-items:center;gap:10px;font-size:clamp(15px,2vw,19px);
     letter-spacing:.1em;color:var(--cover-ink);text-decoration:none;padding-bottom:10px;
@@ -280,13 +281,14 @@
 
             <div class="form-step" data-step="5">
               <div class="input-group">
-                <label for="involvement">How involved are you in managing it, day to day?</label>
-                <select id="involvement" required>
+                <label for="capitalScale">Roughly, what scale of capital are you currently managing?</label>
+                <select id="capitalScale" required>
                   <option value="" disabled selected>Select one</option>
-                  <option value="I decide everything myself">I decide everything myself</option>
-                  <option value="I decide with an advisor">I decide with an advisor</option>
-                  <option value="I have a family office/team">I have a family office/team</option>
-                  <option value="I largely delegate it">I largely delegate it</option>
+                  <option value="Under ₹1 Cr">Under ₹1 Cr</option>
+                  <option value="₹1 Cr – ₹5 Cr">₹1 Cr – ₹5 Cr</option>
+                  <option value="₹5 Cr – ₹25 Cr">₹5 Cr – ₹25 Cr</option>
+                  <option value="₹25 Cr and above">₹25 Cr and above</option>
+                  <option value="I'd prefer not to say">I'd prefer not to say</option>
                 </select>
               </div>
               <div class="step-nav">
@@ -344,7 +346,8 @@
           <div class="cover-subtitle">THE CONCLAVE</div>
           <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
           <div class="cover-meta">
-            <div class="cover-date">MUMBAI &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-date">VADODARA &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
             <div class="cover-seats">A limited number of seats remain.</div>
           </div>
           <a href="#" class="enter-room-link">ENTER THE ROOM <span class="enter-arrow">→</span></a>
@@ -360,7 +363,8 @@
           <div class="cover-subtitle">THE CONCLAVE</div>
           <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
           <div class="cover-meta">
-            <div class="cover-date">MUMBAI &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-date">VADODARA &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
             <div class="cover-seats">A limited number of seats remain.</div>
           </div>
           <a href="#" class="enter-room-link">ENTER THE ROOM <span class="enter-arrow">→</span></a>
@@ -555,7 +559,7 @@
         email: document.getElementById('email').value.trim(),
         capitalPriority: document.getElementById('capitalPriority').value,
         capitalLocation: document.getElementById('capitalLocation').value,
-        involvement: document.getElementById('involvement').value,
+        capitalScale: document.getElementById('capitalScale').value,
         eveningIntent: document.getElementById('eveningIntent').value,
         source: 'conclave-site',
         submittedAt: new Date().toISOString()
