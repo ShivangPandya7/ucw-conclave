@@ -46,21 +46,29 @@
   .door-right .leaf-outer{right:0;transform-origin:right center;}
   .door-right .leaf-inner{right:100%;transform-origin:right center;}
 
-  /* closed -> open: outer leaf (at the wall) waits longest, the innermost
-     leaf (nearest the centre) moves first */
-  #doorScene.open .door-left .leaf-outer{transform:rotateY(-130deg);transition-delay:.25s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner{transform:rotateY(150deg);transition-delay:.2s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(-150deg);transition-delay:.15s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(150deg);transition-delay:.1s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-150deg);transition-delay:.05s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(150deg);transition-delay:0s;}
+  /* closed -> open: local rotations below are chosen so the CUMULATIVE
+     (compounded) orientation of every one of the 6 nested leaves lands
+     between roughly -95deg and -130deg (mirrored +95..+130 on the right) —
+     comfortably past the 90deg point where backface-visibility flips each
+     leaf to its gold reverse, and alternating enough between neighbours to
+     read as a visible zigzag pleat. (Earlier equal-and-opposite local
+     angles cancelled out every other leaf back to nearly its flat, closed
+     orientation, which is why only a sliver at the centre seam looked like
+     it had opened.) Outer leaf (at the wall) waits longest, the innermost
+     leaf (nearest the centre) moves first. */
+  #doorScene.open .door-left .leaf-outer{transform:rotateY(-95deg);transition-delay:.25s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner{transform:rotateY(-35deg);transition-delay:.2s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.15s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.1s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.05s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:0s;}
 
-  #doorScene.open .door-right .leaf-outer{transform:rotateY(130deg);transition-delay:.25s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner{transform:rotateY(-150deg);transition-delay:.2s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(150deg);transition-delay:.15s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-150deg);transition-delay:.1s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(150deg);transition-delay:.05s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-150deg);transition-delay:0s;}
+  #doorScene.open .door-right .leaf-outer{transform:rotateY(95deg);transition-delay:.25s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner{transform:rotateY(35deg);transition-delay:.2s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.15s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.1s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.05s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:0s;}
 
   /* open -> closed: reverse the cascade so the outer leaf (at the wall)
      settles back first and the centre leaf zips shut last */
