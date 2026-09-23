@@ -50,14 +50,29 @@
     color:#5b5346;margin-bottom:44px;line-height:1.5;}
   .cover-meta{margin-bottom:64px;}
   .cover-date{font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--cover-ink);margin-bottom:10px;}
-  .cover-venue{font-size:clamp(11px,1.4vw,13px);letter-spacing:.2em;color:var(--cover-muted);margin-bottom:14px;}
+  .cover-venue{font-weight:700;font-size:clamp(12px,1.6vw,14px);letter-spacing:.2em;margin-bottom:14px;
+    display:inline-block;
+    background:linear-gradient(90deg,#8a6416 0%,#c8965a 20%,#fff4cd 35%,#c8965a 50%,#8a6416 70%,#7d5726 100%);
+    background-size:220% auto;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    color:#8a6416;animation:venue-shine 3.2s linear infinite;}
+  @keyframes venue-shine{
+    0%{background-position:-200% center;}
+    100%{background-position:200% center;}
+  }
   .cover-seats{font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--cover-muted);}
-  .enter-room-link{display:inline-flex;align-items:center;gap:10px;font-size:clamp(15px,2vw,19px);
-    letter-spacing:.1em;color:var(--cover-ink);text-decoration:none;padding-bottom:10px;
-    border-bottom:2px solid var(--cover-accent);transition:all .3s ease;cursor:pointer;}
-  .enter-room-link:hover{gap:16px;color:var(--cover-accent);}
+
+  .enter-room-link{display:inline-flex;align-items:center;gap:10px;font-weight:700;
+    font-size:clamp(15px,2vw,19px);letter-spacing:.1em;color:var(--cover-ink);text-decoration:none;
+    padding:15px 36px;border-radius:34px;border:1.5px solid var(--cover-accent);
+    background:linear-gradient(rgba(156,58,48,.05),rgba(156,58,48,.05));
+    box-shadow:0 6px 20px rgba(156,58,48,.14),inset 0 1px 0 rgba(255,255,255,.5);
+    transition:all .3s ease;cursor:pointer;}
+  .enter-room-link:hover,.enter-room-link.hovering{gap:16px;color:#fff;border-color:var(--cover-accent);
+    background:linear-gradient(90deg,var(--cover-accent),var(--cover-accent2));
+    transform:translateY(-3px);box-shadow:0 12px 30px rgba(156,58,48,.32),inset 0 1px 0 rgba(255,255,255,.3);}
+  .enter-room-link:active{transform:translateY(-1px);}
   .enter-arrow{display:inline-block;transition:transform .3s ease;}
-  .enter-room-link:hover .enter-arrow{transform:translateX(4px);}
+  .enter-room-link:hover .enter-arrow,.enter-room-link.hovering .enter-arrow{transform:translateX(5px);}
 
   @media (max-width:640px){
     .cover-meta{margin-bottom:50px;}
@@ -346,7 +361,7 @@
           <div class="cover-subtitle">THE CONCLAVE</div>
           <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
           <div class="cover-meta">
-            <div class="cover-date">VADODARA &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
             <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
             <div class="cover-seats">A limited number of seats remain.</div>
           </div>
@@ -363,7 +378,7 @@
           <div class="cover-subtitle">THE CONCLAVE</div>
           <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
           <div class="cover-meta">
-            <div class="cover-date">VADODARA &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
             <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
             <div class="cover-seats">A limited number of seats remain.</div>
           </div>
@@ -388,8 +403,14 @@
       doorScene.classList.remove('open');
       setTimeout(() => room.classList.remove('visible'), 1150);
     }
-    document.querySelectorAll('.enter-room-link').forEach((el) => {
+    const enterLinks = document.querySelectorAll('.enter-room-link');
+    enterLinks.forEach((el) => {
       el.addEventListener('click', (e) => { e.preventDefault(); openDoor(); });
+      // the cover is split into two DOM copies for the door effect, so a
+      // real :hover only fires on whichever half the cursor is over —
+      // mirror it onto both copies so the reconstructed button hovers as one
+      el.addEventListener('mouseenter', () => enterLinks.forEach((l) => l.classList.add('hovering')));
+      el.addEventListener('mouseleave', () => enterLinks.forEach((l) => l.classList.remove('hovering')));
     });
     document.getElementById('navCloseLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
     document.getElementById('backLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
