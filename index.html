@@ -61,17 +61,26 @@
   }
   .cover-seats{font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--cover-muted);}
 
-  .enter-room-link{display:inline-flex;align-items:center;gap:10px;font-weight:700;
-    font-size:clamp(15px,2vw,19px);letter-spacing:.1em;color:var(--cover-ink);text-decoration:none;
-    padding:15px 36px;border-radius:34px;border:1.5px solid var(--cover-accent);
-    background:linear-gradient(rgba(156,58,48,.05),rgba(156,58,48,.05));
-    box-shadow:0 6px 20px rgba(156,58,48,.14),inset 0 1px 0 rgba(255,255,255,.5);
+  .enter-room-link{position:relative;overflow:hidden;isolation:isolate;
+    display:inline-flex;align-items:center;gap:10px;font-weight:700;
+    font-size:clamp(15px,2vw,19px);letter-spacing:.1em;color:#fdf0d5;text-decoration:none;
+    padding:15px 36px;border-radius:34px;border:1.5px solid rgba(230,192,127,.55);
+    background:linear-gradient(135deg,#8c2f3a 0%,#6b1f2a 55%,#4a1420 100%);
+    box-shadow:0 8px 26px rgba(74,20,32,.45),inset 0 1px 0 rgba(255,255,255,.18);
     transition:all .3s ease;cursor:pointer;}
-  .enter-room-link:hover,.enter-room-link.hovering{gap:16px;color:#fff;border-color:var(--cover-accent);
-    background:linear-gradient(90deg,var(--cover-accent),var(--cover-accent2));
-    transform:translateY(-3px);box-shadow:0 12px 30px rgba(156,58,48,.32),inset 0 1px 0 rgba(255,255,255,.3);}
+  .enter-room-link::before{content:'';position:absolute;top:-60%;left:-80%;width:22%;height:220%;
+    background:linear-gradient(100deg,transparent,rgba(255,224,158,.9),transparent);
+    transform:rotate(20deg);animation:enter-shine 3s ease-in-out infinite;pointer-events:none;}
+  @keyframes enter-shine{
+    0%{left:-80%;}
+    50%{left:130%;}
+    100%{left:130%;}
+  }
+  .enter-room-link:hover,.enter-room-link.hovering{gap:16px;
+    transform:translateY(-3px);filter:brightness(1.1);
+    box-shadow:0 14px 34px rgba(74,20,32,.6),inset 0 1px 0 rgba(255,255,255,.22);}
   .enter-room-link:active{transform:translateY(-1px);}
-  .enter-arrow{display:inline-block;transition:transform .3s ease;}
+  .enter-arrow{display:inline-block;transition:transform .3s ease;position:relative;z-index:1;}
   .enter-room-link:hover .enter-arrow,.enter-room-link.hovering .enter-arrow{transform:translateX(5px);}
 
   @media (max-width:640px){

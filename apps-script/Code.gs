@@ -54,6 +54,11 @@ function doPost(e) {
 
     const sheet = getSheet_();
 
+    // force the Phone column to plain text — otherwise Sheets tries to parse
+    // a value starting with "+" (e.g. "+91 98123 45678") as a formula/number
+    // and shows #ERROR! instead of the actual phone number
+    sheet.getRange('C:C').setNumberFormat('@');
+
     // simple de-dupe: same email already applied (only the header row exists
     // before the first submission, so skip the check rather than requesting
     // a 0-row range, which Apps Script rejects)
