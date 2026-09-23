@@ -31,81 +31,64 @@
   .door-half.door-right{right:0;}
 
   /* ---- Accordion flaps: each half is sliced into 6 INDEPENDENT leaves
-     (not nested — deep nested preserve-3d turned out to render
-     inconsistently across browsers, which is what caused the "only a
-     sliver opens" bug). Each leaf hinges on its own outer edge and plays
-     a relay: it swings out to -80deg, keeps going through a full -180deg
-     flip (a clean, fully-flat flash of its gold reverse), then eases back
-     to -100deg to rest — a spot just past the 90deg mark where
-     backface-visibility is showing the gold side but the leaf is turned
-     thin enough edge-on not to block the room behind it. The next leaf
-     starts partway through the previous leaf's swing (while it's still
-     travelling from -80 to -180), so the whole row visibly folds open
-     one section at a time rather than everything moving at once, or
-     everything just sitting frozen except one gap. Closing plays the
-     same relay backwards. ---- */
+     (not nested — deep nested preserve-3d rendered inconsistently across
+     browsers). Each leaf does a two-phase move: first it flips a full
+     180deg IN PLACE (a clean, fully-flat flash of its gold reverse —
+     matching "closes 180 degrees, shows its back of gold"), then, still
+     flipped, it SLIDES all the way off the edge of the screen (rather
+     than fading out on the spot) — so it visibly travels away and
+     overlaps/rolls together with the neighbouring leaves doing the same
+     thing, instead of just vanishing in place. The next leaf starts while
+     the previous one is still mid-flip/mid-slide, so the whole row reads
+     as one continuous cascade folding away section by section. Closing
+     plays the same move backwards: slides in from off-screen already
+     flipped, then unflips back to the flat cover. ---- */
   .leaf{position:absolute;top:0;height:100%;width:16.6667%;}
   .door-left .leaf{transform-origin:left center;}
   .door-right .leaf{transform-origin:right center;}
 
-  /* Resting a leaf at an exact "edge-on" angle to make it invisible turned
-     out to be unreliable — browsers don't always finish rasterizing a
-     GPU-animated 3D transform at the precise final geometry, so leaves
-     could settle looking wider than they should and block the room behind
-     them. Instead of depending on that exact angle, each leaf fades to
-     opacity 0 right at the end of its own swing (fading back to 1 right at
-     the start of closing) — so the room is guaranteed clear once a leaf's
-     turn is done, regardless of the exact rotation it lands on. */
   @keyframes fold-open-left{
-    0%{transform:rotateY(0deg);opacity:1;}
-    30%{transform:rotateY(-80deg);opacity:1;}
-    60%{transform:rotateY(-180deg);opacity:1;}
-    85%{transform:rotateY(-110deg);opacity:1;}
-    100%{transform:rotateY(-100deg);opacity:0;}
+    0%{transform:translateX(0) rotateY(0deg);}
+    45%{transform:translateX(0) rotateY(-180deg);}
+    100%{transform:translateX(-130vw) rotateY(-180deg);}
   }
   @keyframes fold-open-right{
-    0%{transform:rotateY(0deg);opacity:1;}
-    30%{transform:rotateY(80deg);opacity:1;}
-    60%{transform:rotateY(180deg);opacity:1;}
-    85%{transform:rotateY(110deg);opacity:1;}
-    100%{transform:rotateY(100deg);opacity:0;}
+    0%{transform:translateX(0) rotateY(0deg);}
+    45%{transform:translateX(0) rotateY(180deg);}
+    100%{transform:translateX(130vw) rotateY(180deg);}
   }
   @keyframes fold-close-left{
-    0%{transform:rotateY(-100deg);opacity:0;}
-    15%{transform:rotateY(-110deg);opacity:1;}
-    40%{transform:rotateY(-180deg);opacity:1;}
-    70%{transform:rotateY(-80deg);opacity:1;}
-    100%{transform:rotateY(0deg);opacity:1;}
+    0%{transform:translateX(-130vw) rotateY(-180deg);}
+    55%{transform:translateX(0) rotateY(-180deg);}
+    100%{transform:translateX(0) rotateY(0deg);}
   }
   @keyframes fold-close-right{
-    0%{transform:rotateY(100deg);opacity:0;}
-    15%{transform:rotateY(110deg);opacity:1;}
-    40%{transform:rotateY(180deg);opacity:1;}
-    70%{transform:rotateY(80deg);opacity:1;}
-    100%{transform:rotateY(0deg);opacity:1;}
+    0%{transform:translateX(130vw) rotateY(180deg);}
+    55%{transform:translateX(0) rotateY(180deg);}
+    100%{transform:translateX(0) rotateY(0deg);}
   }
 
   /* opening: innermost leaf (nearest the centre, data-i="5") goes first,
-     the outer leaf at the wall (data-i="0") goes last, one every 0.35s */
-  #doorScene.anim-open .door-left .leaf{animation:fold-open-left 1s cubic-bezier(.45,0,.4,1) forwards;}
-  #doorScene.anim-open .door-right .leaf{animation:fold-open-right 1s cubic-bezier(.45,0,.4,1) forwards;}
-  #doorScene.anim-open .leaf[data-i="0"]{animation-delay:1.75s;}
-  #doorScene.anim-open .leaf[data-i="1"]{animation-delay:1.4s;}
-  #doorScene.anim-open .leaf[data-i="2"]{animation-delay:1.05s;}
-  #doorScene.anim-open .leaf[data-i="3"]{animation-delay:.7s;}
-  #doorScene.anim-open .leaf[data-i="4"]{animation-delay:.35s;}
+     the outer leaf at the wall (data-i="0") goes last, one every 0.22s */
+  #doorScene.anim-open .door-left .leaf{animation:fold-open-left 1.1s cubic-bezier(.5,0,.5,1) forwards;}
+  #doorScene.anim-open .door-right .leaf{animation:fold-open-right 1.1s cubic-bezier(.5,0,.5,1) forwards;}
+  #doorScene.anim-open .leaf[data-i="0"]{animation-delay:1.1s;}
+  #doorScene.anim-open .leaf[data-i="1"]{animation-delay:.88s;}
+  #doorScene.anim-open .leaf[data-i="2"]{animation-delay:.66s;}
+  #doorScene.anim-open .leaf[data-i="3"]{animation-delay:.44s;}
+  #doorScene.anim-open .leaf[data-i="4"]{animation-delay:.22s;}
   #doorScene.anim-open .leaf[data-i="5"]{animation-delay:0s;}
 
-  /* closing: reverse order — the outer leaf at the wall folds back first,
-     the centre leaf swings shut last */
-  #doorScene.anim-close .door-left .leaf{animation:fold-close-left 1s cubic-bezier(.45,0,.4,1) forwards;}
-  #doorScene.anim-close .door-right .leaf{animation:fold-close-right 1s cubic-bezier(.45,0,.4,1) forwards;}
+  /* closing: reverse order — the outer leaf at the wall slides back and
+     unflips first, the centre leaf follows last */
+  #doorScene.anim-close .door-left .leaf{animation:fold-close-left 1.1s cubic-bezier(.5,0,.5,1) forwards;}
+  #doorScene.anim-close .door-right .leaf{animation:fold-close-right 1.1s cubic-bezier(.5,0,.5,1) forwards;}
   #doorScene.anim-close .leaf[data-i="0"]{animation-delay:0s;}
-  #doorScene.anim-close .leaf[data-i="1"]{animation-delay:.35s;}
-  #doorScene.anim-close .leaf[data-i="2"]{animation-delay:.7s;}
-  #doorScene.anim-close .leaf[data-i="3"]{animation-delay:1.05s;}
-  #doorScene.anim-close .leaf[data-i="4"]{animation-delay:1.4s;}
-  #doorScene.anim-close .leaf[data-i="5"]{animation-delay:1.75s;}
+  #doorScene.anim-close .leaf[data-i="1"]{animation-delay:.22s;}
+  #doorScene.anim-close .leaf[data-i="2"]{animation-delay:.44s;}
+  #doorScene.anim-close .leaf[data-i="3"]{animation-delay:.66s;}
+  #doorScene.anim-close .leaf[data-i="4"]{animation-delay:.88s;}
+  #doorScene.anim-close .leaf[data-i="5"]{animation-delay:1.1s;}
 
   .leaf-face{position:absolute;inset:0;backface-visibility:hidden;}
   .leaf-face.leaf-front{background:var(--cover-bg);overflow:hidden;}
@@ -722,10 +705,10 @@
     const doorScene = document.getElementById('doorScene');
     const room = document.getElementById('room');
 
-    // the open/close relay (6 leaves x 0.35s stagger + each leaf's own 1s
-    // animation) takes 2.75s end to end — kept in sync with the
-    // animation-delay values on .leaf[data-i] in the <style> block above
-    const FOLD_SEQUENCE_MS = 2750;
+    // the open/close relay (6 leaves x 0.22s stagger + each leaf's own
+    // 1.1s flip-then-slide animation) takes 2.2s end to end — kept in
+    // sync with the animation-delay values on .leaf[data-i] above
+    const FOLD_SEQUENCE_MS = 2200;
 
     // Some browsers leave a stale composited layer behind on the
     // 3D-rotated, backface-hidden leaves once their keyframe animation
