@@ -32,13 +32,15 @@
 
   /* ---- Accordion flaps: each half is sliced into 6 nested leaves (a chain
      of hinges — leaf 1 to the true screen edge, leaf 2 to leaf 1, and so on)
-     so their rotations compose in 3D. Opening pleats them outward toward
-     the viewer, flashing the shiny gold reverse face of each fold as it
-     turns past 90 degrees, in a cascade that unzips from the centre
-     outward; closing plays the same motion back in reverse. ---- */
+     so their rotations compose in 3D. Each leaf's own transition is 0.4s,
+     and the delays below are spaced in exact 0.4s steps so the 6 leaves
+     fold away ONE AT A TIME — each one finishes its own fold out of the
+     screen (flashing its gold reverse past 90deg) before the next one
+     starts — rather than all cascading at once; closing plays the same
+     sequence back in reverse. ---- */
   .leaf{position:absolute;top:0;height:100%;
     transform-style:preserve-3d;
-    transition:transform 1.05s cubic-bezier(.65,0,.35,1);}
+    transition:transform .4s cubic-bezier(.65,0,.35,1);}
   .leaf-outer{width:16.6667%;}
   .leaf-inner{width:100%;}
   .door-left .leaf-outer{left:0;transform-origin:left center;}
@@ -54,31 +56,31 @@
      read as a visible zigzag pleat. (Earlier equal-and-opposite local
      angles cancelled out every other leaf back to nearly its flat, closed
      orientation, which is why only a sliver at the centre seam looked like
-     it had opened.) Outer leaf (at the wall) waits longest, the innermost
-     leaf (nearest the centre) moves first. */
-  #doorScene.open .door-left .leaf-outer{transform:rotateY(-95deg);transition-delay:.25s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner{transform:rotateY(-35deg);transition-delay:.2s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.15s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.1s;}
-  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.05s;}
+     it had opened.) The innermost leaf (nearest the centre) goes first,
+     one leaf every 0.4s, out to the outer leaf at the wall. */
+  #doorScene.open .door-left .leaf-outer{transform:rotateY(-95deg);transition-delay:2s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner{transform:rotateY(-35deg);transition-delay:1.6s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:1.2s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.8s;}
+  #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.4s;}
   #doorScene.open .door-left .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:0s;}
 
-  #doorScene.open .door-right .leaf-outer{transform:rotateY(95deg);transition-delay:.25s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner{transform:rotateY(35deg);transition-delay:.2s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.15s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.1s;}
-  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.05s;}
+  #doorScene.open .door-right .leaf-outer{transform:rotateY(95deg);transition-delay:2s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner{transform:rotateY(35deg);transition-delay:1.6s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:1.2s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:.8s;}
+  #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(-35deg);transition-delay:.4s;}
   #doorScene.open .door-right .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transform:rotateY(35deg);transition-delay:0s;}
 
-  /* open -> closed: reverse the cascade so the outer leaf (at the wall)
-     settles back first and the centre leaf zips shut last */
+  /* open -> closed: reverse the sequence so the outer leaf (at the wall)
+     folds back first and the centre leaf zips shut last, one at a time */
   #doorScene:not(.open) .door-left .leaf-outer,
   #doorScene:not(.open) .door-right .leaf-outer{transition-delay:0s;}
-  #doorScene:not(.open) .leaf-outer>.leaf-inner{transition-delay:.05s;}
-  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner{transition-delay:.1s;}
-  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:.15s;}
-  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:.2s;}
-  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:.25s;}
+  #doorScene:not(.open) .leaf-outer>.leaf-inner{transition-delay:.4s;}
+  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner{transition-delay:.8s;}
+  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:1.2s;}
+  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:1.6s;}
+  #doorScene:not(.open) .leaf-outer>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner>.leaf-inner{transition-delay:2s;}
 
   .leaf-face{position:absolute;inset:0;backface-visibility:hidden;}
   .leaf-face.leaf-front{background:var(--cover-bg);overflow:hidden;}
@@ -714,7 +716,7 @@
         doorScene.style.display = 'none';
         void doorScene.offsetHeight;
         doorScene.style.display = '';
-      }, 1350);
+      }, 2450);
     }
     const enterLinks = document.querySelectorAll('.enter-room-link');
     enterLinks.forEach((el) => {
