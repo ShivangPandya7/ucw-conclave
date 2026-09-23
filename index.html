@@ -3,160 +3,601 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UpperCrust Wealth Conclave — By Invitation Only</title>
-<meta name="description" content="An exclusive gathering of global market leaders, institutional asset managers, and distinguished family offices, hosted by UpperCrust Wealth.">
+<title>UpperCrust Wealth — The Conclave</title>
+<meta name="description" content="An evening for people who think beyond the next quarter. Mumbai, 14 November 2026.">
 <link rel="stylesheet" href="assets/styles.css?v=7">
 <style>
-  .hero-card{max-width:820px;width:100%;padding:52px 48px;text-align:center;}
-  .hero-badge{display:inline-block;background:rgba(169,126,31,.1);border:1px solid rgba(169,126,31,.4);
-    border-radius:20px;padding:7px 18px;color:var(--gold-text);font-size:12px;font-weight:600;
-    letter-spacing:2px;text-transform:uppercase;margin-bottom:26px;}
-  .hero-title{font-size:clamp(30px,5vw,46px);font-weight:700;line-height:1.15;margin-bottom:18px;
-    background:linear-gradient(135deg,var(--gold-1),var(--gold-3),var(--gold-4));-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;}
-  .hero-subtitle{font-size:16px;color:var(--ink);line-height:1.7;margin-bottom:34px;
-    max-width:620px;margin-left:auto;margin-right:auto;}
-  .cta-btn{margin-bottom:32px;}
-  .stats-grid{display:flex;justify-content:center;}
-  .stat-box{background:rgba(169,126,31,.05);border:1px solid rgba(169,126,31,.15);border-radius:14px;padding:14px 32px;}
-  .stat-number{font-size:24px;font-weight:700;color:var(--gold-text);margin-bottom:4px;}
-  .stat-label{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;}
-  .existing-note{margin-top:22px;font-size:12.5px;color:var(--text-faint);line-height:1.6;}
-  .existing-note b{color:var(--gold-text);font-weight:600;}
+  /* ================= Cover (the "door") ================= */
+  :root{
+    --cover-bg:#f4efe1;
+    --cover-ink:#2b2620;
+    --cover-accent:#9c3a30;
+    --cover-accent2:#6a4a8f;
+    --cover-muted:#8c8375;
+    --cover-line:rgba(43,38,32,.09);
+  }
+  html,body{background:var(--cover-bg);}
 
-  .section{max-width:920px;width:100%;margin-top:36px;padding:40px;}
-  .section h2{font-size:22px;color:var(--gold-text);letter-spacing:.5px;margin-bottom:14px;}
-  .section p{color:var(--ink);font-size:14.5px;line-height:1.8;}
-  .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
-  .agenda-item{background:rgba(169,126,31,.05);border:1px solid rgba(169,126,31,.15);
-    border-radius:12px;padding:16px 18px;}
-  .agenda-item .tag{font-size:10.5px;color:var(--gold-text);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block;}
-  .agenda-item .desc{font-size:13px;color:var(--ink);}
-  .speakers-note{margin-top:14px;font-size:13px;color:var(--text-faint);font-style:italic;}
+  #doorScene{position:fixed;inset:0;z-index:30;}
+  .door-half{position:absolute;top:0;height:100%;width:50%;overflow:hidden;
+    background:var(--cover-bg);transition:transform 1.15s cubic-bezier(.76,0,.24,1);}
+  .door-left{left:0;}
+  .door-right{right:0;}
+  #doorScene.open .door-left{transform:translateX(-100%);}
+  #doorScene.open .door-right{transform:translateX(100%);}
 
-  footer{margin-top:60px;padding:30px 20px;text-align:center;color:var(--text-faint);font-size:12px;}
+  .cover-viewport{position:absolute;top:0;width:100vw;height:100%;display:flex;
+    align-items:center;justify-content:center;}
+  .door-left .cover-viewport{left:0;}
+  .door-right .cover-viewport{right:0;}
+
+  .vlines{position:absolute;inset:0;pointer-events:none;}
+  .vlines span{position:absolute;top:0;bottom:0;width:1px;background:var(--cover-line);}
+
+  .cover-content{position:relative;z-index:1;text-align:center;max-width:900px;padding:0 24px;}
+
+  .cover-accent{position:relative;width:170px;height:44px;margin:0 auto 30px;}
+  .accent-glow{position:absolute;left:50%;top:10px;width:90px;height:90px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(240,210,120,.55), transparent 70%);filter:blur(6px);}
+  .accent-bar{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--cover-accent),var(--cover-accent2));}
+
+  .cover-title{font-family:Georgia,'Times New Roman',serif;font-weight:400;
+    font-size:clamp(28px,7vw,58px);letter-spacing:.08em;color:var(--cover-ink);line-height:1.15;margin-bottom:16px;}
+  .cover-subtitle{font-family:Georgia,serif;font-size:clamp(13px,2vw,18px);letter-spacing:.35em;
+    color:var(--cover-accent);margin-bottom:42px;}
+  .cover-tagline{font-family:Georgia,serif;font-style:italic;font-size:clamp(15px,2.3vw,22px);
+    color:#5b5346;margin-bottom:44px;line-height:1.5;}
+  .cover-meta{margin-bottom:64px;}
+  .cover-date{font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--cover-ink);margin-bottom:12px;}
+  .cover-seats{font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--cover-muted);}
+  .enter-room-link{display:inline-flex;align-items:center;gap:10px;font-size:clamp(15px,2vw,19px);
+    letter-spacing:.1em;color:var(--cover-ink);text-decoration:none;padding-bottom:10px;
+    border-bottom:2px solid var(--cover-accent);transition:all .3s ease;cursor:pointer;}
+  .enter-room-link:hover{gap:16px;color:var(--cover-accent);}
+  .enter-arrow{display:inline-block;transition:transform .3s ease;}
+  .enter-room-link:hover .enter-arrow{transform:translateX(4px);}
 
   @media (max-width:640px){
-    .hero-card{padding:32px 22px;}
-    .agenda-grid{grid-template-columns:1fr;}
-    .section{padding:26px 22px;}
+    .cover-meta{margin-bottom:50px;}
+    .cover-tagline{margin-bottom:36px;}
+  }
+
+  /* ================= Room (registration) ================= */
+  #room{visibility:hidden;}
+  #room.visible{visibility:visible;}
+
+  .form-card{width:100%;max-width:520px;padding:40px 38px;}
+  .form-header{text-align:center;margin-bottom:22px;}
+  .form-header h2{font-size:22px;color:var(--gold-text);letter-spacing:.5px;margin-bottom:8px;}
+  .form-header p{font-size:12.5px;color:var(--text-dim);line-height:1.6;}
+
+  .step-progress{margin-bottom:26px;}
+  .step-progress-track{height:5px;background:rgba(125,87,38,.15);border-radius:3px;overflow:hidden;}
+  .step-progress-fill{height:100%;width:12.5%;border-radius:3px;
+    background:linear-gradient(90deg,var(--gold-2),var(--gold-3));transition:width .45s ease;}
+  .step-progress-label{margin-top:7px;font-size:11px;letter-spacing:.5px;color:var(--text-faint);text-align:right;}
+
+  .input-group{margin-bottom:15px;text-align:left;}
+  .input-group label{display:block;font-size:11px;letter-spacing:1px;color:#4a4130;
+    margin-bottom:6px;text-transform:uppercase;}
+  .input-group input,.input-group select,.input-group textarea{
+    width:100%;padding:12px 14px;background:linear-gradient(135deg,#e6c07f,#c8965a);
+    border:1px solid rgba(125,87,38,.5);
+    border-radius:8px;color:#000;font-size:13.5px;outline:none;transition:all .25s ease;font-family:inherit;}
+  .input-group input::placeholder,.input-group textarea::placeholder{color:rgba(0,0,0,.55);}
+  .input-group textarea{resize:vertical;min-height:70px;}
+  .input-group select option{background:#e6c07f;color:#000;}
+  .input-group input:focus,.input-group select:focus,.input-group textarea:focus{
+    border-color:var(--gold-4);box-shadow:0 0 10px rgba(168,118,60,.35);background:linear-gradient(135deg,#edd09a,#d4a86a);}
+
+  .hp{position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;}
+
+  .form-step{display:none;}
+  .form-step.active{display:block;animation:step-in .4s ease;}
+  @keyframes step-in{
+    from{opacity:0;transform:translateX(18px);}
+    to{opacity:1;transform:translateX(0);}
+  }
+  .step-nav{display:flex;gap:10px;margin-top:6px;}
+  .step-back-btn{flex:0 0 auto;}
+  .step-next-btn{flex:1;}
+
+  .submit-btn{width:100%;border-radius:8px;font-size:13px;letter-spacing:1px;margin-top:0;}
+  .submit-btn[disabled]{cursor:wait;}
+  .step-next-btn{border-radius:8px;font-size:13px;letter-spacing:1px;padding:12px 20px;}
+
+  .back-link{display:block;text-align:center;margin-top:18px;font-size:12px;color:var(--text-faint);
+    text-decoration:none;cursor:pointer;}
+  .back-link:hover{color:var(--gold-text);}
+
+  .result-msg{display:none;text-align:center;font-size:13px;margin-top:14px;line-height:1.6;padding:12px;border-radius:8px;}
+  .result-msg.success{color:#166534;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);}
+  .result-msg.error{color:#991b1b;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);}
+
+  #regForm.submitted .form-step,
+  #regForm.submitted .step-progress{display:none;}
+  .submitted-panel{display:none;text-align:center;}
+  #regForm.submitted .submitted-panel{display:block;}
+  .submitted-panel .check{font-size:40px;color:var(--gold-text);margin-bottom:10px;}
+  .submitted-panel h3{font-size:19px;color:var(--gold-text);margin-bottom:10px;letter-spacing:.3px;}
+  .submitted-panel p{font-size:13px;color:var(--text-dim);line-height:1.7;}
+
+  .coin-shower{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden;}
+  .shower-coin{position:absolute;top:-40px;border-radius:50%;
+    background:radial-gradient(circle at 30% 26%,
+      #fffaea 0%, #fff0bd 10%, #f6d383 26%, #e0ab5c 44%,
+      #c1893f 62%, #96692a 80%, #6e4c1c 94%, #52380f 100%);
+    box-shadow:
+      0 4px 8px rgba(50,32,8,.5),
+      0 1px 0 1px rgba(120,80,25,.6),
+      inset 0 2px 2px rgba(255,255,255,.85),
+      inset 0 -3px 4px rgba(70,45,12,.65);
+    animation-name:coin-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;}
+  .shower-coin::after{content:'';position:absolute;inset:16%;border-radius:50%;
+    border:1px solid rgba(255,248,220,.5);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -1px 2px rgba(60,38,10,.55);}
+  @keyframes coin-fall{
+    0%{transform:translateY(-10vh) rotate(0deg);opacity:0;}
+    8%{opacity:1;}
+    100%{transform:translateY(110vh) rotate(var(--rot));opacity:1;}
+  }
+  .thanks-overlay{position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;opacity:0;transition:opacity .5s ease;
+    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.6),transparent 65%);}
+  .thanks-overlay.show{opacity:1;}
+  .thanks-overlay .thanks-text{font-family:Georgia,serif;font-size:34px;letter-spacing:7px;text-transform:uppercase;
+    color:#8a6416;text-shadow:0 0 24px rgba(255,255,255,.95);
+    opacity:0;transform:scale(.85);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1);}
+  .thanks-overlay.show .thanks-text{opacity:1;transform:scale(1);}
+  @media (max-width:640px){
+    .thanks-overlay .thanks-text{font-size:22px;letter-spacing:4px;}
   }
 </style>
 </head>
 <body>
 
-  <div id="wave-bg">
-    <svg viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#fffdf8"/>
-          <stop offset="100%" stop-color="#f2ddac"/>
-        </linearGradient>
-        <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#eec583"/>
-          <stop offset="100%" stop-color="#c89a56"/>
-        </linearGradient>
-        <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#dcab5e"/>
-          <stop offset="100%" stop-color="#b3823c"/>
-        </linearGradient>
-        <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#a8763c"/>
-          <stop offset="100%" stop-color="#7d5726"/>
-        </linearGradient>
-      </defs>
-      <path class="wv1" fill="url(#wg1)" opacity="0.9" d="M0,240 C240,170 480,310 720,240 C960,170 1200,310 1440,240 L1440,800 L0,800 Z"/>
-      <path class="wv2" fill="url(#wg2)" opacity="0.85" d="M0,370 C260,300 420,440 680,380 C920,320 1180,460 1440,390 L1440,800 L0,800 Z"/>
-      <path class="wv3" fill="url(#wg3)" opacity="0.82" d="M0,510 C240,590 480,450 720,510 C960,570 1200,430 1440,500 L1440,800 L0,800 Z"/>
-      <path class="wv4" fill="url(#wg4)" opacity="0.8" d="M0,650 C260,580 480,700 740,650 C980,605 1200,715 1440,660 L1440,800 L0,800 Z"/>
-    </svg>
-  </div>
-  <div class="content-overlay">
-    <nav>
-      <div class="nav-logo"><img src="assets/ucw-logo.png" alt="UpperCrust Wealth"></div>
-      <div class="nav-links">
-        <a class="link-ghost" href="mailto:events@uppercrustwealth.com">Contact</a>
-        <a class="btn-outline" href="register.html">Request Invitation</a>
-      </div>
-    </nav>
-
-    <div class="page">
-
-      <!-- HERO -->
-      <div class="hero-card card reveal">
-        <div class="hero-badge">By Invitation Only · 2026 Edition</div>
-        <h1 class="hero-title">UpperCrust Wealth Conclave</h1>
-        <p class="hero-subtitle">
-          An exclusive gathering of global market leaders, institutional asset managers, and
-          distinguished family offices exploring gold allocation, wealth preservation, and
-          macro trends shaping the year ahead.
-        </p>
-
-        <a class="cta-btn" href="register.html">Request an Invitation</a>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-number">Curated</div>
-            <div class="stat-label">Speaker Faculty</div>
-          </div>
-        </div>
-
-        <div class="existing-note">
-          <b>Already an UpperCrust Wealth client?</b> You do not need to register here —
-          your personal invitation will be sent directly by our relationship team.
-        </div>
-      </div>
-
-      <!-- ABOUT -->
-      <div class="section card reveal">
-        <h2>About the Conclave</h2>
-        <p>
-          UpperCrust Wealth brings together 300 of the country's most discerning investors and
-          allocators for a single day of candid, closed-door conversation — away from the noise of
-          public markets. This edition centres on gold and precious-metal allocation, macro
-          positioning, and multi-generational wealth planning, with perspectives from the World
-          Gold Council and leading mutual fund houses.
-        </p>
-      </div>
-
-      <!-- AGENDA / SPEAKERS -->
-      <div class="section card reveal">
-        <h2>What to Expect</h2>
-        <div class="agenda-grid">
-          <div class="agenda-item">
-            <span class="tag">Keynote</span>
-            <div class="desc">Gold as a strategic allocation — perspectives from the World Gold Council.</div>
-          </div>
-          <div class="agenda-item">
-            <span class="tag">Panel</span>
-            <div class="desc">Macro outlook with leading mutual fund and AMC strategists.</div>
-          </div>
-          <div class="agenda-item">
-            <span class="tag">Roundtable</span>
-            <div class="desc">Multi-generational wealth transfer and family governance.</div>
-          </div>
-          <div class="agenda-item">
-            <span class="tag">Networking</span>
-            <div class="desc">Curated introductions across 300 delegates, by invitation only.</div>
-          </div>
-        </div>
-        <p class="speakers-note">Full speaker line-up and venue details to be announced to confirmed guests.</p>
-      </div>
-
+  <!-- ================= The room: registration wizard, hidden behind the door ================= -->
+  <div id="room">
+    <div id="wave-bg">
+      <svg viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fffdf8"/>
+            <stop offset="100%" stop-color="#f2ddac"/>
+          </linearGradient>
+          <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#eec583"/>
+            <stop offset="100%" stop-color="#c89a56"/>
+          </linearGradient>
+          <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#dcab5e"/>
+            <stop offset="100%" stop-color="#b3823c"/>
+          </linearGradient>
+          <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a8763c"/>
+            <stop offset="100%" stop-color="#7d5726"/>
+          </linearGradient>
+        </defs>
+        <path class="wv1" fill="url(#wg1)" opacity="0.9" d="M0,240 C240,170 480,310 720,240 C960,170 1200,310 1440,240 L1440,800 L0,800 Z"/>
+        <path class="wv2" fill="url(#wg2)" opacity="0.85" d="M0,370 C260,300 420,440 680,380 C920,320 1180,460 1440,390 L1440,800 L0,800 Z"/>
+        <path class="wv3" fill="url(#wg3)" opacity="0.82" d="M0,510 C240,590 480,450 720,510 C960,570 1200,430 1440,500 L1440,800 L0,800 Z"/>
+        <path class="wv4" fill="url(#wg4)" opacity="0.8" d="M0,650 C260,580 480,700 740,650 C980,605 1200,715 1440,660 L1440,800 L0,800 Z"/>
+      </svg>
     </div>
 
-    <footer>
-      UpperCrust Wealth Family Wealth Office · This is not an offer or solicitation.<br>
-      Seats are allocated at UpperCrust Wealth's discretion following application review.
-    </footer>
+    <div class="content-overlay">
+      <nav>
+        <div class="nav-logo"><img src="assets/ucw-logo.png" alt="UpperCrust Wealth"></div>
+        <div class="nav-links">
+          <a class="link-ghost" id="navCloseLink" href="#">← Back to Overview</a>
+        </div>
+      </nav>
+
+      <div class="page">
+        <div class="form-card card reveal is-visible">
+          <div class="form-header">
+            <h2>Request an Invitation</h2>
+            <p>UpperCrust Wealth Conclave · 2026 Edition</p>
+          </div>
+
+          <form id="regForm" autocomplete="off">
+            <!-- honeypot field -->
+            <div class="hp"><label>Leave blank</label><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+
+            <div class="step-progress">
+              <div class="step-progress-track"><div class="step-progress-fill" id="stepProgressFill"></div></div>
+              <div class="step-progress-label" id="stepProgressLabel">Step 1 of 7</div>
+            </div>
+
+            <div class="form-step active" data-step="0">
+              <div class="input-group">
+                <label for="fullName">Might I ask your name?</label>
+                <input type="text" id="fullName" required placeholder="Jane Doe">
+              </div>
+              <div class="step-nav">
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="1">
+              <div class="input-group">
+                <label for="phone">Where can we reach you directly?</label>
+                <input type="tel" id="phone" required placeholder="+91 98765 43210">
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="2">
+              <div class="input-group">
+                <label for="email">Where shall correspondence find you?</label>
+                <input type="email" id="email" required placeholder="jane@firm.com">
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="3">
+              <div class="input-group">
+                <label for="capitalPriority">When you decide on capital, what matters first?</label>
+                <select id="capitalPriority" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="Conviction">Conviction</option>
+                  <option value="Downside protection">Downside protection</option>
+                  <option value="Compounding growth">Compounding growth</option>
+                  <option value="Access others don't have">Access others don't have</option>
+                  <option value="Speed to move">Speed to move</option>
+                </select>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="4">
+              <div class="input-group">
+                <label for="capitalLocation">Today, where does your capital spend most of its time?</label>
+                <select id="capitalLocation" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="Own business">Own business</option>
+                  <option value="Public markets">Public markets</option>
+                  <option value="Private markets/alternatives">Private markets/alternatives</option>
+                  <option value="Real estate">Real estate</option>
+                  <option value="Spread across all">Spread across all</option>
+                </select>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="5">
+              <div class="input-group">
+                <label for="involvement">How involved are you in managing it, day to day?</label>
+                <select id="involvement" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="I decide everything myself">I decide everything myself</option>
+                  <option value="I decide with an advisor">I decide with an advisor</option>
+                  <option value="I have a family office/team">I have a family office/team</option>
+                  <option value="I largely delegate it">I largely delegate it</option>
+                </select>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="6">
+              <div class="input-group">
+                <label for="eveningIntent">What would make this evening worth your time?</label>
+                <select id="eveningIntent" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="New capital opportunities">New capital opportunities</option>
+                  <option value="Ideas & perspective">Ideas &amp; perspective</option>
+                  <option value="The room itself (who's in it)">The room itself (who's in it)</option>
+                  <option value="A specific introduction">A specific introduction</option>
+                </select>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="submit" class="submit-btn step-next-btn" id="submitBtn">Submit Application</button>
+              </div>
+            </div>
+
+            <div class="submitted-panel">
+              <div class="check">✓</div>
+              <h3>Application Received</h3>
+              <p>Our team will review it and follow up by email if a seat becomes
+                available — this is not a confirmed reservation.</p>
+            </div>
+
+            <a href="#" class="back-link" id="backLink">← Back to overview</a>
+
+            <div id="errorMsg" class="result-msg error">
+              Something went wrong sending your application. Please try again, or email
+              events@uppercrustwealth.com directly.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div></div>
+
+  <!-- ================= The door: cover screen, duplicated left/right for the split-open effect ================= -->
+  <div id="doorScene">
+    <div class="door-half door-left">
+      <div class="cover-viewport">
+        <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+        <div class="cover-content">
+          <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+          <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+          <div class="cover-subtitle">THE CONCLAVE</div>
+          <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
+          <div class="cover-meta">
+            <div class="cover-date">MUMBAI &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-seats">A limited number of seats remain.</div>
+          </div>
+          <a href="#" class="enter-room-link">ENTER THE ROOM <span class="enter-arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="door-half door-right">
+      <div class="cover-viewport">
+        <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+        <div class="cover-content">
+          <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+          <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+          <div class="cover-subtitle">THE CONCLAVE</div>
+          <p class="cover-tagline">An evening for people who think beyond the next quarter.</p>
+          <div class="cover-meta">
+            <div class="cover-date">MUMBAI &middot; 14 NOVEMBER 2026</div>
+            <div class="cover-seats">A limited number of seats remain.</div>
+          </div>
+          <a href="#" class="enter-room-link">ENTER THE ROOM <span class="enter-arrow">→</span></a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Scroll-reveal for content sections
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    // ---- Door open/close: reveals the registration room without a page navigation ----
+    const doorScene = document.getElementById('doorScene');
+    const room = document.getElementById('room');
+
+    function openDoor() {
+      room.classList.add('visible');
+      doorScene.classList.add('open');
+      doorScene.style.pointerEvents = 'none';
+    }
+    function closeDoor() {
+      doorScene.style.pointerEvents = '';
+      doorScene.classList.remove('open');
+      setTimeout(() => room.classList.remove('visible'), 1150);
+    }
+    document.querySelectorAll('.enter-room-link').forEach((el) => {
+      el.addEventListener('click', (e) => { e.preventDefault(); openDoor(); });
+    });
+    document.getElementById('navCloseLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
+    document.getElementById('backLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
+
+    // ---- Apps Script Web App endpoint (see apps-script/Code.gs + SETUP.md) ----
+    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbz_fEoEaNBCcx1-XPOtqDesTr5j4kyJITNfwz4aFbGQ2FU_0UfWBBt3fHf0aFYI0Eo/exec";
+
+    const form = document.getElementById('regForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const thanksOverlay = document.getElementById('thanksOverlay');
+
+    // ---- Step wizard: reveal one field at a time ----
+    const steps = Array.from(document.querySelectorAll('.form-step'));
+    const totalSteps = steps.length;
+    const progressFill = document.getElementById('stepProgressFill');
+    const progressLabel = document.getElementById('stepProgressLabel');
+    let current = 0;
+
+    function showStep(i) {
+      steps.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      progressFill.style.width = ((i + 1) / totalSteps) * 100 + '%';
+      progressLabel.textContent = `Step ${i + 1} of ${totalSteps}`;
+      const field = steps[i].querySelector('input, select, textarea');
+      if (field) setTimeout(() => field.focus(), 50);
+    }
+
+    function goNext() {
+      const field = steps[current].querySelector('input, select, textarea');
+      if (field && field.hasAttribute('required') && !field.checkValidity()) {
+        field.reportValidity();
+        return;
+      }
+      if (current < totalSteps - 1) {
+        current++;
+        showStep(current);
+      }
+    }
+
+    function goBack() {
+      if (current > 0) {
+        current--;
+        showStep(current);
+      }
+    }
+
+    steps.forEach((step) => {
+      const nextBtn = step.querySelector('.step-next-btn:not([type="submit"])');
+      const backBtn = step.querySelector('.step-back-btn');
+      if (nextBtn) nextBtn.addEventListener('click', goNext);
+      if (backBtn) backBtn.addEventListener('click', goBack);
+      const input = step.querySelector('input');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); goNext(); }
+        });
+      }
+      const select = step.querySelector('select');
+      if (select) {
+        // picking an option advances automatically, typeform-style
+        select.addEventListener('change', () => setTimeout(goNext, 200));
+      }
+    });
+
+    showStep(0);
+
+    // ---- Coin-drop sound (synthesized — no audio file needed) ----
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      return audioCtx;
+    }
+    // Must be called directly inside a user-gesture handler (not after an
+    // await) so Safari/iOS actually unlocks audio playback for later use.
+    function unlockAudio() {
+      const ctx = getAudioCtx();
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+    }
+
+    function playCoinClink() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      const freq = 1700 + Math.random() * 1400;
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.55, now + 0.16);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+    }
+
+    // schedules random coin-clink sounds for the given duration, like a
+    // continuous shower of coins hitting a surface
+    function playCoinShowerSound(durationMs) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const start = performance.now();
+      (function scheduleNext() {
+        if (performance.now() - start > durationMs) return;
+        playCoinClink();
+        setTimeout(scheduleNext, 55 + Math.random() * 85);
+      })();
+    }
+
+    // ---- Coin shower + "Thank You" celebration on successful submit ----
+    const SHOWER_DURATION_MS = 4600;
+    function spawnCoinShower(count) {
+      const layer = document.createElement('div');
+      layer.className = 'coin-shower';
+      document.body.appendChild(layer);
+      for (let i = 0; i < count; i++) {
+        const coin = document.createElement('div');
+        coin.className = 'shower-coin';
+        const size = 12 + Math.random() * 14;
+        const duration = 2.2 + Math.random() * 1.6;
+        const delay = Math.random() * 1.1;
+        const rotDeg = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 260);
+        coin.style.left = Math.random() * 100 + 'vw';
+        coin.style.width = size + 'px';
+        coin.style.height = size + 'px';
+        coin.style.animationDuration = duration + 's';
+        coin.style.animationDelay = delay + 's';
+        coin.style.setProperty('--rot', rotDeg + 'deg');
+        layer.appendChild(coin);
+      }
+      setTimeout(() => layer.remove(), 4200);
+    }
+
+    function celebrateSuccess() {
+      spawnCoinShower(46);
+      setTimeout(() => spawnCoinShower(30), 400);
+      thanksOverlay.classList.add('show');
+      setTimeout(() => thanksOverlay.classList.remove('show'), 3600);
+      form.classList.add('submitted');
+
+      // continuous vibration + coin-clink sounds for the whole shower
+      if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
+      playCoinShowerSound(SHOWER_DURATION_MS);
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+      unlockAudio(); // must happen synchronously within this user-gesture handler
+
+      // honeypot check
+      if (form.website.value) return;
+
+      if (ENDPOINT_URL.indexOf('PASTE_YOUR') === 0) {
+        errorMsg.textContent = 'Form is not connected to a database yet — see SETUP.md (ENDPOINT_URL in register.html).';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const payload = {
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        capitalPriority: document.getElementById('capitalPriority').value,
+        capitalLocation: document.getElementById('capitalLocation').value,
+        involvement: document.getElementById('involvement').value,
+        eveningIntent: document.getElementById('eveningIntent').value,
+        source: 'conclave-site',
+        submittedAt: new Date().toISOString()
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      // text/plain avoids a CORS preflight against Apps Script web apps
+      fetch(ENDPOINT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then(async (res) => {
+          // Apps Script writes the row to the Sheet before it finishes
+          // sending a response, and its response occasionally isn't valid
+          // JSON by the time it reaches fetch (a cold-start/redirect quirk
+          // on Google's side) even though the write already succeeded. So:
+          // a genuine HTTP failure is always an error, but an unparseable
+          // body on an otherwise-OK response is treated as success rather
+          // than incorrectly showing an error after the data was saved.
+          let data = null;
+          try {
+            data = JSON.parse(await res.text());
+          } catch (parseErr) {
+            data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status };
+          }
+          if (data && data.result === 'error') {
+            throw new Error(data.error || 'Unknown error');
+          }
+          form.reset();
+          celebrateSuccess();
+        })
+        .catch(() => {
+          errorMsg.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Application';
+        });
+    });
   </script>
 </body>
 </html>
