@@ -17,19 +17,55 @@
     --cover-line:rgba(43,38,32,.09);
   }
   html,body{background:var(--cover-bg);}
+  /* While the cover/door is showing there's no vertical scrollbar reserving
+     layout width — keeping 100vw and the leaves' percentage widths in exact
+     agreement, which is what keeps the 4-way fold seams pixel-perfect.
+     Scrolling comes back once the registration room is open (its form can
+     run taller than one screen). */
+  body{overflow-y:hidden;}
+  body.room-open{overflow-y:auto;}
 
-  #doorScene{position:fixed;inset:0;z-index:30;}
-  .door-half{position:absolute;top:0;height:100%;width:50%;overflow:hidden;
-    background:var(--cover-bg);transition:transform 1.15s cubic-bezier(.76,0,.24,1);}
-  .door-left{left:0;}
-  .door-right{right:0;}
-  #doorScene.open .door-left{transform:translateX(-100%);}
-  #doorScene.open .door-right{transform:translateX(100%);}
+  #doorScene{position:fixed;inset:0;z-index:30;perspective:2200px;}
+  .door-half{position:absolute;top:0;height:100%;width:50%;transform-style:preserve-3d;}
+  .door-half.door-left{left:0;}
+  .door-half.door-right{right:0;}
+
+  /* ---- Bifold-style flaps: each half splits into an outer leaf (hinged to
+     the true screen edge) and an inner leaf (hinged to the outer leaf's own
+     edge, nested so its rotation composes with the outer leaf's in 3D).
+     Opening folds both leaves away like a closet bifold door, showing a
+     shiny gold reverse face as each one turns; closing plays the same
+     motion backwards. ---- */
+  .leaf{position:absolute;top:0;height:100%;
+    transform-style:preserve-3d;
+    transition:transform 1.05s cubic-bezier(.65,0,.35,1);}
+  .leaf-outer{width:50%;}
+  .leaf-inner{width:100%;}
+  .door-left .leaf-outer{left:0;transform-origin:left center;}
+  .door-left .leaf-inner{left:100%;transform-origin:left center;}
+  .door-right .leaf-outer{right:0;transform-origin:right center;}
+  .door-right .leaf-inner{right:100%;transform-origin:right center;}
+
+  #doorScene.open .door-left .leaf-outer{transform:rotateY(-125deg);transition-delay:.12s;}
+  #doorScene.open .door-left .leaf-inner{transform:rotateY(150deg);}
+  #doorScene.open .door-right .leaf-outer{transform:rotateY(125deg);transition-delay:.12s;}
+  #doorScene.open .door-right .leaf-inner{transform:rotateY(-150deg);}
+
+  .leaf-face{position:absolute;inset:0;backface-visibility:hidden;}
+  .leaf-face.leaf-front{background:var(--cover-bg);overflow:hidden;}
+  .leaf-face.leaf-back{transform:rotateY(180deg);overflow:hidden;
+    background:linear-gradient(135deg,#3a2b0f 0%,#8a6416 22%,#f3d989 42%,#fff6d8 50%,#f3d989 58%,#8a6416 78%,#3a2b0f 100%);
+    box-shadow:inset 0 0 50px rgba(0,0,0,.3);}
+  .leaf-face.leaf-back::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.6) 48%,transparent 66%);
+    background-size:240% 100%;animation:leaf-shine 2.4s ease-in-out infinite;}
+  @keyframes leaf-shine{
+    0%{background-position:130% 0;}
+    100%{background-position:-50% 0;}
+  }
 
   .cover-viewport{position:absolute;top:0;width:100vw;height:100%;display:flex;
     align-items:center;justify-content:center;}
-  .door-left .cover-viewport{left:0;}
-  .door-right .cover-viewport{right:0;}
 
   .vlines{position:absolute;inset:0;pointer-events:none;}
   .vlines span{position:absolute;top:0;bottom:0;width:1px;background:var(--cover-line);}
@@ -82,6 +118,12 @@
   .enter-room-link:active{transform:translateY(-1px);}
   .enter-arrow{display:inline-block;transition:transform .3s ease;position:relative;z-index:1;}
   .enter-room-link:hover .enter-arrow,.enter-room-link.hovering .enter-arrow{transform:translateX(5px);}
+
+  /* Shown instead of the CTA once a registration has gone through */
+  .save-the-date{display:none;font-weight:700;font-size:clamp(15px,2vw,19px);
+    letter-spacing:.35em;color:var(--cover-accent);}
+  body.registered .enter-room-link{display:none;}
+  body.registered .save-the-date{display:inline-block;}
 
   @media (max-width:640px){
     .cover-meta{margin-bottom:50px;}
@@ -359,39 +401,93 @@
 
   <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div></div>
 
-  <!-- ================= The door: cover screen, duplicated left/right for the split-open effect ================= -->
+  <!-- ================= The door: cover screen, split into 4 bifold flaps (outer + inner leaf per side) ================= -->
   <div id="doorScene">
     <div class="door-half door-left">
-      <div class="cover-viewport">
-        <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
-        <div class="cover-content">
-          <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
-          <h1 class="cover-title">UPPERCRUST WEALTH</h1>
-          <div class="cover-subtitle">THE CONCLAVE</div>
-          <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
-          <div class="cover-meta">
-            <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
-            <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
-            <div class="cover-seats">A limited number of seats remain.</div>
+      <div class="leaf leaf-outer">
+        <div class="leaf-face leaf-front">
+          <div class="cover-viewport" style="left:0;">
+            <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+            <div class="cover-content">
+              <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+              <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+              <div class="cover-subtitle">THE CONCLAVE</div>
+              <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
+              <div class="cover-meta">
+                <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
+                <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
+                <div class="cover-seats">A limited number of seats remain.</div>
+              </div>
+              <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+              <div class="save-the-date">SAVE THE DATE</div>
+            </div>
           </div>
-          <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+        </div>
+        <div class="leaf-face leaf-back"></div>
+        <div class="leaf leaf-inner">
+          <div class="leaf-face leaf-front">
+            <div class="cover-viewport" style="left:-25vw;">
+              <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+              <div class="cover-content">
+                <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+                <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+                <div class="cover-subtitle">THE CONCLAVE</div>
+                <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
+                <div class="cover-meta">
+                  <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
+                  <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
+                  <div class="cover-seats">A limited number of seats remain.</div>
+                </div>
+                <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+                <div class="save-the-date">SAVE THE DATE</div>
+              </div>
+            </div>
+          </div>
+          <div class="leaf-face leaf-back"></div>
         </div>
       </div>
     </div>
     <div class="door-half door-right">
-      <div class="cover-viewport">
-        <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
-        <div class="cover-content">
-          <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
-          <h1 class="cover-title">UPPERCRUST WEALTH</h1>
-          <div class="cover-subtitle">THE CONCLAVE</div>
-          <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
-          <div class="cover-meta">
-            <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
-            <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
-            <div class="cover-seats">A limited number of seats remain.</div>
+      <div class="leaf leaf-outer">
+        <div class="leaf-face leaf-front">
+          <div class="cover-viewport" style="right:0;">
+            <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+            <div class="cover-content">
+              <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+              <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+              <div class="cover-subtitle">THE CONCLAVE</div>
+              <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
+              <div class="cover-meta">
+                <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
+                <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
+                <div class="cover-seats">A limited number of seats remain.</div>
+              </div>
+              <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+              <div class="save-the-date">SAVE THE DATE</div>
+            </div>
           </div>
-          <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+        </div>
+        <div class="leaf-face leaf-back"></div>
+        <div class="leaf leaf-inner">
+          <div class="leaf-face leaf-front">
+            <div class="cover-viewport" style="right:-25vw;">
+              <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
+              <div class="cover-content">
+                <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
+                <h1 class="cover-title">UPPERCRUST WEALTH</h1>
+                <div class="cover-subtitle">THE CONCLAVE</div>
+                <p class="cover-tagline">A morning for people who think beyond the next quarter.</p>
+                <div class="cover-meta">
+                  <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
+                  <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 2:30 PM</div>
+                  <div class="cover-seats">A limited number of seats remain.</div>
+                </div>
+                <a href="#" class="enter-room-link">ENTER THE 1% ROOM <span class="enter-arrow">→</span></a>
+                <div class="save-the-date">SAVE THE DATE</div>
+              </div>
+            </div>
+          </div>
+          <div class="leaf-face leaf-back"></div>
         </div>
       </div>
     </div>
@@ -404,13 +500,24 @@
 
     function openDoor() {
       room.classList.add('visible');
+      document.body.classList.add('room-open');
       doorScene.classList.add('open');
       doorScene.style.pointerEvents = 'none';
     }
     function closeDoor() {
       doorScene.style.pointerEvents = '';
       doorScene.classList.remove('open');
-      setTimeout(() => room.classList.remove('visible'), 1150);
+      setTimeout(() => {
+        room.classList.remove('visible');
+        document.body.classList.remove('room-open');
+        // Some browsers leave a stale composited layer behind on the
+        // 3D-rotated, backface-hidden leaves once their transition settles
+        // back to the flat state — force a clean repaint so the cover
+        // renders crisp again instead of a leftover mid-fold frame.
+        doorScene.style.display = 'none';
+        void doorScene.offsetHeight;
+        doorScene.style.display = '';
+      }, 1200);
     }
     const enterLinks = document.querySelectorAll('.enter-room-link');
     enterLinks.forEach((el) => {
@@ -526,6 +633,15 @@
 
       // continuous vibration for the whole shower
       if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
+
+      // once the shower has played out, fold the doors shut again on their
+      // own — swap the CTA for "Save the Date" so a returning visitor sees
+      // they're already registered. A page reload has no memory of this
+      // (nothing is persisted), so it always starts fresh from the cover.
+      setTimeout(() => {
+        document.body.classList.add('registered');
+        closeDoor();
+      }, SHOWER_DURATION_MS);
     }
 
     form.addEventListener('submit', function (e) {
