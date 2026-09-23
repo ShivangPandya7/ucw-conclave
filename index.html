@@ -477,11 +477,6 @@
           if (e.key === 'Enter') { e.preventDefault(); goNext(); }
         });
       }
-      const select = step.querySelector('select');
-      if (select) {
-        // picking an option advances automatically, typeform-style
-        select.addEventListener('change', () => setTimeout(goNext, 200));
-      }
     });
 
     showStep(0);
