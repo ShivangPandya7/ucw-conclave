@@ -340,53 +340,6 @@
 
     showStep(0);
 
-    // ---- Coin-drop sound (synthesized — no audio file needed) ----
-    let audioCtx = null;
-    function getAudioCtx() {
-      if (!audioCtx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (AC) audioCtx = new AC();
-      }
-      return audioCtx;
-    }
-    // Must be called directly inside a user-gesture handler (not after an
-    // await) so Safari/iOS actually unlocks audio playback for later use.
-    function unlockAudio() {
-      const ctx = getAudioCtx();
-      if (ctx && ctx.state === 'suspended') ctx.resume();
-    }
-
-    function playCoinClink() {
-      const ctx = getAudioCtx();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      const freq = 1700 + Math.random() * 1400;
-      osc.frequency.setValueAtTime(freq, now);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.55, now + 0.16);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.006);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.22);
-    }
-
-    // schedules random coin-clink sounds for the given duration, like a
-    // continuous shower of coins hitting a surface
-    function playCoinShowerSound(durationMs) {
-      const ctx = getAudioCtx();
-      if (!ctx) return;
-      const start = performance.now();
-      (function scheduleNext() {
-        if (performance.now() - start > durationMs) return;
-        playCoinClink();
-        setTimeout(scheduleNext, 55 + Math.random() * 85);
-      })();
-    }
-
     // ---- Coin shower + "Thank You" celebration on successful submit ----
     const SHOWER_DURATION_MS = 4600;
     function spawnCoinShower(count) {
@@ -418,15 +371,13 @@
       setTimeout(() => thanksOverlay.classList.remove('show'), 3600);
       form.classList.add('submitted');
 
-      // continuous vibration + coin-clink sounds for the whole shower
+      // continuous vibration for the whole shower
       if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
-      playCoinShowerSound(SHOWER_DURATION_MS);
     }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       errorMsg.style.display = 'none';
-      unlockAudio(); // must happen synchronously within this user-gesture handler
 
       // honeypot check
       if (form.website.value) return;
