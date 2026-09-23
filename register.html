@@ -157,7 +157,7 @@
           <div class="form-step active" data-step="0">
             <div class="input-group">
               <label for="fullName">Might I ask your name?</label>
-              <input type="text" id="fullName" required placeholder="Jane Doe">
+              <input type="text" id="fullName" required>
             </div>
             <div class="step-nav">
               <button type="button" class="cta-btn step-next-btn">Next</button>
@@ -166,8 +166,8 @@
 
           <div class="form-step" data-step="1">
             <div class="input-group">
-              <label for="phone">Where can we reach you directly?</label>
-              <input type="tel" id="phone" required placeholder="+91 98765 43210">
+              <label for="phone">Where can we reach you directly? - phone number</label>
+              <input type="tel" id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number">
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -178,7 +178,7 @@
           <div class="form-step" data-step="2">
             <div class="input-group">
               <label for="email">Where shall correspondence find you?</label>
-              <input type="email" id="email" required placeholder="jane@firm.com">
+              <input type="email" id="email" required>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -332,6 +332,18 @@
         });
       }
     });
+
+    // ---- Phone: keep only the 10 useful digits (strips spaces, +91 country
+    // code, and a leading 0 that some autofills add) so validation and the
+    // payload always carry a clean 10-digit number ----
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', () => {
+        let digits = phoneInput.value.replace(/\D/g, '').replace(/^0+/, '');
+        if (digits.length > 10) digits = digits.slice(-10);
+        phoneInput.value = digits;
+      });
+    }
 
     showStep(0);
 
