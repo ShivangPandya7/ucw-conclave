@@ -30,66 +30,232 @@
   .door-half.door-left{left:0;}
   .door-half.door-right{right:0;}
 
-  /* ---- Accordion flaps: each half is sliced into 6 INDEPENDENT leaves
-     (not nested — deep nested preserve-3d rendered inconsistently across
-     browsers). Each leaf does a two-phase move: first it flips a full
-     180deg IN PLACE (a clean, fully-flat flash of its gold reverse —
-     matching "closes 180 degrees, shows its back of gold"), then, still
-     flipped, it SLIDES all the way off the edge of the screen (rather
-     than fading out on the spot) — so it visibly travels away and
-     overlaps/rolls together with the neighbouring leaves doing the same
-     thing, instead of just vanishing in place. The next leaf starts while
-     the previous one is still mid-flip/mid-slide, so the whole row reads
-     as one continuous cascade folding away section by section. Closing
-     plays the same move backwards: slides in from off-screen already
-     flipped, then unflips back to the flat cover. ---- */
+  /* ---- Rolling accordion: each half is sliced into 6 INDEPENDENT leaves
+     (independent siblings, not nested — deep nested preserve-3d rendered
+     inconsistently across browsers in earlier attempts). The rolling-up
+     effect ("once section 1 folds, treat 1+2 as one section folding into
+     3, and so on") is baked directly into each leaf's own multi-stage
+     keyframes: leaf 0 (at the wall) flips 180deg first and starts sliding
+     off-screen; on leaf 1's turn, leaf 1 ALSO flips and starts sliding,
+     while leaf 0 (already flipped) gets pushed one slice further along in
+     the SAME step — and so on through leaf 5, so by the end all 6 have
+     flipped and are trailing off-screen together like a single rolled-up
+     group. A constant baseline offset is folded into every push (see
+     BASE_OFFSET_VW in the generator) to counter the one-leaf-width shift
+     that rotateY(180deg) itself adds when pivoting on the leaf's own
+     edge — without it, a late-joining leaf (fewer pushes) could still
+     render back on-screen; verified by reading actual bounding-box
+     coordinates after the animation, not just the transform values.
+     Closing plays each leaf's timeline in reverse: the group un-rolls
+     from the wall outward, each leaf peeling off and flipping back to
+     flat as its turn comes. All 6 leaves share one 3s timeline (no
+     per-leaf delay needed — the waiting is baked into each leaf's own
+     keyframes). ---- */
   .leaf{position:absolute;top:0;height:100%;width:16.6667%;}
   .door-left .leaf{transform-origin:left center;}
   .door-right .leaf{transform-origin:right center;}
 
-  @keyframes fold-open-left{
-    0%{transform:translateX(0) rotateY(0deg);}
-    45%{transform:translateX(0) rotateY(-180deg);}
-    100%{transform:translateX(-130vw) rotateY(-180deg);}
-  }
-  @keyframes fold-open-right{
-    0%{transform:translateX(0) rotateY(0deg);}
-    45%{transform:translateX(0) rotateY(180deg);}
-    100%{transform:translateX(130vw) rotateY(180deg);}
-  }
-  @keyframes fold-close-left{
-    0%{transform:translateX(-130vw) rotateY(-180deg);}
-    55%{transform:translateX(0) rotateY(-180deg);}
-    100%{transform:translateX(0) rotateY(0deg);}
-  }
-  @keyframes fold-close-right{
-    0%{transform:translateX(130vw) rotateY(180deg);}
-    55%{transform:translateX(0) rotateY(180deg);}
-    100%{transform:translateX(0) rotateY(0deg);}
-  }
+  @keyframes fold-open-left-0{
+      0%{transform:translateX(0) rotateY(0deg);}
+      16.6667%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      50%{transform:translateX(-75vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(-91.6667vw) rotateY(-180deg);}
+      100%{transform:translateX(-100vw) rotateY(-180deg);}
+    }
+  @keyframes fold-open-left-1{
+      0%{transform:translateX(0) rotateY(0deg);}
+      16.6667%{transform:translateX(0) rotateY(0deg);}
+      33.3333%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      50%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(-75vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+      100%{transform:translateX(-91.6667vw) rotateY(-180deg);}
+    }
+  @keyframes fold-open-left-2{
+      0%{transform:translateX(0) rotateY(0deg);}
+      33.3333%{transform:translateX(0) rotateY(0deg);}
+      50%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(-75vw) rotateY(-180deg);}
+      100%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+    }
+  @keyframes fold-open-left-3{
+      0%{transform:translateX(0) rotateY(0deg);}
+      50%{transform:translateX(0) rotateY(0deg);}
+      66.6667%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      100%{transform:translateX(-75vw) rotateY(-180deg);}
+    }
+  @keyframes fold-open-left-4{
+      0%{transform:translateX(0) rotateY(0deg);}
+      66.6667%{transform:translateX(0) rotateY(0deg);}
+      83.3333%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      100%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+    }
+  @keyframes fold-open-left-5{
+      0%{transform:translateX(0) rotateY(0deg);}
+      83.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+    }
+  @keyframes fold-close-left-0{
+      0%{transform:translateX(-100vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(-91.6667vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+      50%{transform:translateX(-75vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-left-1{
+      0%{transform:translateX(-91.6667vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(-75vw) rotateY(-180deg);}
+      50%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      83.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-left-2{
+      0%{transform:translateX(-83.3333vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(-75vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      50%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      66.6667%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-left-3{
+      0%{transform:translateX(-75vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      50%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-left-4{
+      0%{transform:translateX(-66.6667vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      33.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-left-5{
+      0%{transform:translateX(-58.3333vw) rotateY(-180deg);}
+      16.6667%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-open-right-0{
+      0%{transform:translateX(0) rotateY(0deg);}
+      16.6667%{transform:translateX(58.3333vw) rotateY(180deg);}
+      33.3333%{transform:translateX(66.6667vw) rotateY(180deg);}
+      50%{transform:translateX(75vw) rotateY(180deg);}
+      66.6667%{transform:translateX(83.3333vw) rotateY(180deg);}
+      83.3333%{transform:translateX(91.6667vw) rotateY(180deg);}
+      100%{transform:translateX(100vw) rotateY(180deg);}
+    }
+  @keyframes fold-open-right-1{
+      0%{transform:translateX(0) rotateY(0deg);}
+      16.6667%{transform:translateX(0) rotateY(0deg);}
+      33.3333%{transform:translateX(58.3333vw) rotateY(180deg);}
+      50%{transform:translateX(66.6667vw) rotateY(180deg);}
+      66.6667%{transform:translateX(75vw) rotateY(180deg);}
+      83.3333%{transform:translateX(83.3333vw) rotateY(180deg);}
+      100%{transform:translateX(91.6667vw) rotateY(180deg);}
+    }
+  @keyframes fold-open-right-2{
+      0%{transform:translateX(0) rotateY(0deg);}
+      33.3333%{transform:translateX(0) rotateY(0deg);}
+      50%{transform:translateX(58.3333vw) rotateY(180deg);}
+      66.6667%{transform:translateX(66.6667vw) rotateY(180deg);}
+      83.3333%{transform:translateX(75vw) rotateY(180deg);}
+      100%{transform:translateX(83.3333vw) rotateY(180deg);}
+    }
+  @keyframes fold-open-right-3{
+      0%{transform:translateX(0) rotateY(0deg);}
+      50%{transform:translateX(0) rotateY(0deg);}
+      66.6667%{transform:translateX(58.3333vw) rotateY(180deg);}
+      83.3333%{transform:translateX(66.6667vw) rotateY(180deg);}
+      100%{transform:translateX(75vw) rotateY(180deg);}
+    }
+  @keyframes fold-open-right-4{
+      0%{transform:translateX(0) rotateY(0deg);}
+      66.6667%{transform:translateX(0) rotateY(0deg);}
+      83.3333%{transform:translateX(58.3333vw) rotateY(180deg);}
+      100%{transform:translateX(66.6667vw) rotateY(180deg);}
+    }
+  @keyframes fold-open-right-5{
+      0%{transform:translateX(0) rotateY(0deg);}
+      83.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(58.3333vw) rotateY(180deg);}
+    }
+  @keyframes fold-close-right-0{
+      0%{transform:translateX(100vw) rotateY(180deg);}
+      16.6667%{transform:translateX(91.6667vw) rotateY(180deg);}
+      33.3333%{transform:translateX(83.3333vw) rotateY(180deg);}
+      50%{transform:translateX(75vw) rotateY(180deg);}
+      66.6667%{transform:translateX(66.6667vw) rotateY(180deg);}
+      83.3333%{transform:translateX(58.3333vw) rotateY(180deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-right-1{
+      0%{transform:translateX(91.6667vw) rotateY(180deg);}
+      16.6667%{transform:translateX(83.3333vw) rotateY(180deg);}
+      33.3333%{transform:translateX(75vw) rotateY(180deg);}
+      50%{transform:translateX(66.6667vw) rotateY(180deg);}
+      66.6667%{transform:translateX(58.3333vw) rotateY(180deg);}
+      83.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-right-2{
+      0%{transform:translateX(83.3333vw) rotateY(180deg);}
+      16.6667%{transform:translateX(75vw) rotateY(180deg);}
+      33.3333%{transform:translateX(66.6667vw) rotateY(180deg);}
+      50%{transform:translateX(58.3333vw) rotateY(180deg);}
+      66.6667%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-right-3{
+      0%{transform:translateX(75vw) rotateY(180deg);}
+      16.6667%{transform:translateX(66.6667vw) rotateY(180deg);}
+      33.3333%{transform:translateX(58.3333vw) rotateY(180deg);}
+      50%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-right-4{
+      0%{transform:translateX(66.6667vw) rotateY(180deg);}
+      16.6667%{transform:translateX(58.3333vw) rotateY(180deg);}
+      33.3333%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
+  @keyframes fold-close-right-5{
+      0%{transform:translateX(58.3333vw) rotateY(180deg);}
+      16.6667%{transform:translateX(0) rotateY(0deg);}
+      100%{transform:translateX(0) rotateY(0deg);}
+    }
 
-  /* opening: innermost leaf (nearest the centre, data-i="5") goes first,
-     the outer leaf at the wall (data-i="0") goes last, one every 0.22s */
-  #doorScene.anim-open .door-left .leaf{animation:fold-open-left 1.1s cubic-bezier(.5,0,.5,1) forwards;}
-  #doorScene.anim-open .door-right .leaf{animation:fold-open-right 1.1s cubic-bezier(.5,0,.5,1) forwards;}
-  #doorScene.anim-open .leaf[data-i="0"]{animation-delay:1.1s;}
-  #doorScene.anim-open .leaf[data-i="1"]{animation-delay:.88s;}
-  #doorScene.anim-open .leaf[data-i="2"]{animation-delay:.66s;}
-  #doorScene.anim-open .leaf[data-i="3"]{animation-delay:.44s;}
-  #doorScene.anim-open .leaf[data-i="4"]{animation-delay:.22s;}
-  #doorScene.anim-open .leaf[data-i="5"]{animation-delay:0s;}
-
-  /* closing: reverse order — the outer leaf at the wall slides back and
-     unflips first, the centre leaf follows last */
-  #doorScene.anim-close .door-left .leaf{animation:fold-close-left 1.1s cubic-bezier(.5,0,.5,1) forwards;}
-  #doorScene.anim-close .door-right .leaf{animation:fold-close-right 1.1s cubic-bezier(.5,0,.5,1) forwards;}
-  #doorScene.anim-close .leaf[data-i="0"]{animation-delay:0s;}
-  #doorScene.anim-close .leaf[data-i="1"]{animation-delay:.22s;}
-  #doorScene.anim-close .leaf[data-i="2"]{animation-delay:.44s;}
-  #doorScene.anim-close .leaf[data-i="3"]{animation-delay:.66s;}
-  #doorScene.anim-close .leaf[data-i="4"]{animation-delay:.88s;}
-  #doorScene.anim-close .leaf[data-i="5"]{animation-delay:1.1s;}
-
+  #doorScene.anim-open .door-left .leaf[data-i="0"]{animation:fold-open-left-0 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-left .leaf[data-i="1"]{animation:fold-open-left-1 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-left .leaf[data-i="2"]{animation:fold-open-left-2 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-left .leaf[data-i="3"]{animation:fold-open-left-3 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-left .leaf[data-i="4"]{animation:fold-open-left-4 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-left .leaf[data-i="5"]{animation:fold-open-left-5 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="0"]{animation:fold-open-right-0 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="1"]{animation:fold-open-right-1 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="2"]{animation:fold-open-right-2 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="3"]{animation:fold-open-right-3 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="4"]{animation:fold-open-right-4 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-open .door-right .leaf[data-i="5"]{animation:fold-open-right-5 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="0"]{animation:fold-close-left-0 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="1"]{animation:fold-close-left-1 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="2"]{animation:fold-close-left-2 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="3"]{animation:fold-close-left-3 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="4"]{animation:fold-close-left-4 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-left .leaf[data-i="5"]{animation:fold-close-left-5 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="0"]{animation:fold-close-right-0 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="1"]{animation:fold-close-right-1 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="2"]{animation:fold-close-right-2 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="3"]{animation:fold-close-right-3 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="4"]{animation:fold-close-right-4 3s cubic-bezier(.45,0,.55,1) forwards;}
+  #doorScene.anim-close .door-right .leaf[data-i="5"]{animation:fold-close-right-5 3s cubic-bezier(.45,0,.55,1) forwards;}
   .leaf-face{position:absolute;inset:0;backface-visibility:hidden;}
   .leaf-face.leaf-front{background:var(--cover-bg);overflow:hidden;}
   .leaf-face.leaf-back{transform:rotateY(180deg);overflow:hidden;
@@ -705,10 +871,11 @@
     const doorScene = document.getElementById('doorScene');
     const room = document.getElementById('room');
 
-    // the open/close relay (6 leaves x 0.22s stagger + each leaf's own
-    // 1.1s flip-then-slide animation) takes 2.2s end to end — kept in
-    // sync with the animation-delay values on .leaf[data-i] above
-    const FOLD_SEQUENCE_MS = 2200;
+    // all 6 leaves share one 3s timeline (their own multi-stage keyframes
+    // handle the "wait for your turn, then join and get carried further"
+    // schedule internally) — kept in sync with the @keyframes durations
+    // set on .leaf[data-i] above
+    const FOLD_SEQUENCE_MS = 3000;
 
     // Some browsers leave a stale composited layer behind on the
     // 3D-rotated, backface-hidden leaves once their keyframe animation
