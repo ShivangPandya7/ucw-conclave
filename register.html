@@ -386,7 +386,7 @@
     // attempt has a timeout and is retried with a short back-off. Retrying is
     // safe: the backend ignores a repeat submission from the same email.
     function postWithRetry(payload) {
-      const MAX_ATTEMPTS = 4, TIMEOUT_MS = 30000;
+      const MAX_ATTEMPTS = 6, TIMEOUT_MS = 30000;
       const body = JSON.stringify(payload);
       let attempt = 0;
       const slowTimer = setTimeout(() => {
@@ -403,9 +403,14 @@
           body: body,
           signal: ctrl.signal
         })
-          .then((res) => {
+          .then(async (res) => {
             clearTimeout(timer);
             if (res.status >= 500 && attempt < MAX_ATTEMPTS) throw new Error('retry');
+            // the server answers {result:'busy'} when too many people submit at once
+            let busy = false;
+            try { busy = JSON.parse(await res.clone().text()).result === 'busy'; } catch (e) {}
+            if (busy && attempt < MAX_ATTEMPTS) throw new Error('retry');
+            if (busy) throw new Error('busy');
             return res;
           })
           .catch((err) => {

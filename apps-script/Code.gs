@@ -11,18 +11,25 @@ const HEADERS = [
   'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent'
 ];
 
-function getSheet_() {
+// One-time setup: creates the sheet + header row and formats the Phone column
+// as plain text. Run this once from the editor (select setupSheet > Run).
+function setupSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-  }
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS);
     sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
     sheet.setFrozenRows(1);
   }
+  // plain text for the whole Phone column so "+" numbers never become formulas
+  sheet.getRange('C:C').setNumberFormat('@');
   return sheet;
+}
+
+function getSheet_() {
+  // fast path on every submission: just look the sheet up
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME) || setupSheet();
 }
 
 function jsonOut_(obj) {
@@ -56,7 +63,10 @@ function doPost(e) {
     // for duplicates and write its row, so simultaneous registrations queue up
     // instead of overwriting each other or slipping past the duplicate check.
     const lock = LockService.getScriptLock();
-    lock.waitLock(30000);
+    if (!lock.tryLock(20000)) {
+      // too many people at once — tell the page to retry shortly
+      return jsonOut_({ result: 'busy' });
+    }
     try {
       const sheet = getSheet_();
 
@@ -64,17 +74,17 @@ function doPost(e) {
       // retry after a timeout harmless.
       const lastRow = sheet.getLastRow();
       if (lastRow > 1) {
-        const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues().flat();
-        if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
-          return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+        const target = data.email.toLowerCase();
+        const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues();
+        for (let i = 0; i < existingEmails.length; i++) {
+          if (String(existingEmails[i][0]).toLowerCase() === target) {
+            return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+          }
         }
       }
 
-      const row = lastRow + 1;
-      // force just this row's Phone cell to plain text — otherwise Sheets
-      // parses a value starting with "+" as a formula and shows #ERROR!
-      sheet.getRange(row, 3).setNumberFormat('@');
-      sheet.getRange(row, 1, 1, HEADERS.length).setValues([[
+      // one write call (Phone column is already plain text from setupSheet)
+      sheet.appendRow([
         new Date(),
         data.fullName || '',
         data.phone || '',
@@ -86,7 +96,8 @@ function doPost(e) {
         'Pending Review',
         data.source || '',
         ''
-      ]]);
+      ]);
+      // commit before releasing the lock so the next request sees this row
       SpreadsheetApp.flush();
     } finally {
       lock.releaseLock();
