@@ -382,6 +382,42 @@
       if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
     }
 
+    // Under heavy load Apps Script can be slow or drop a request, so every
+    // attempt has a timeout and is retried with a short back-off. Retrying is
+    // safe: the backend ignores a repeat submission from the same email.
+    function postWithRetry(payload) {
+      const MAX_ATTEMPTS = 4, TIMEOUT_MS = 30000;
+      const body = JSON.stringify(payload);
+      let attempt = 0;
+      const slowTimer = setTimeout(() => {
+        submitBtn.textContent = 'Still submitting… please wait';
+      }, 8000);
+      const tryOnce = () => {
+        attempt++;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+        // text/plain avoids a CORS preflight against Apps Script web apps
+        return fetch(ENDPOINT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: body,
+          signal: ctrl.signal
+        })
+          .then((res) => {
+            clearTimeout(timer);
+            if (res.status >= 500 && attempt < MAX_ATTEMPTS) throw new Error('retry');
+            return res;
+          })
+          .catch((err) => {
+            clearTimeout(timer);
+            if (attempt >= MAX_ATTEMPTS) throw err;
+            const wait = 1000 * attempt + Math.random() * 1500;
+            return new Promise((r) => setTimeout(r, wait)).then(tryOnce);
+          });
+      };
+      return tryOnce().finally(() => clearTimeout(slowTimer));
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       errorMsg.style.display = 'none';
@@ -411,11 +447,7 @@
       submitBtn.textContent = 'Submitting…';
 
       // text/plain avoids a CORS preflight against Apps Script web apps
-      fetch(ENDPOINT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      })
+      postWithRetry(payload)
         .then(async (res) => {
           // Apps Script writes the row to the Sheet before it finishes
           // sending a response, and its response occasionally isn't valid

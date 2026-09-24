@@ -52,37 +52,45 @@ function doPost(e) {
       return jsonOut_({ result: 'error', error: 'Invalid email' });
     }
 
-    const sheet = getSheet_();
+    // Serialise concurrent submissions: only one request at a time may check
+    // for duplicates and write its row, so simultaneous registrations queue up
+    // instead of overwriting each other or slipping past the duplicate check.
+    const lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+    try {
+      const sheet = getSheet_();
 
-    // force the Phone column to plain text — otherwise Sheets tries to parse
-    // a value starting with "+" (e.g. "+91 98123 45678") as a formula/number
-    // and shows #ERROR! instead of the actual phone number
-    sheet.getRange('C:C').setNumberFormat('@');
-
-    // simple de-dupe: same email already applied (only the header row exists
-    // before the first submission, so skip the check rather than requesting
-    // a 0-row range, which Apps Script rejects)
-    const lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues().flat();
-      if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
-        return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+      // simple de-dupe: same email already applied. This also makes a client
+      // retry after a timeout harmless.
+      const lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues().flat();
+        if (existingEmails.some((v) => String(v).toLowerCase() === data.email.toLowerCase())) {
+          return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
+        }
       }
-    }
 
-    sheet.appendRow([
-      new Date(),
-      data.fullName || '',
-      data.phone || '',
-      data.email || '',
-      data.capitalPriority || '',
-      data.capitalLocation || '',
-      data.capitalScale || '',
-      data.eveningIntent || '',
-      'Pending Review',
-      data.source || '',
-      ''
-    ]);
+      const row = lastRow + 1;
+      // force just this row's Phone cell to plain text — otherwise Sheets
+      // parses a value starting with "+" as a formula and shows #ERROR!
+      sheet.getRange(row, 3).setNumberFormat('@');
+      sheet.getRange(row, 1, 1, HEADERS.length).setValues([[
+        new Date(),
+        data.fullName || '',
+        data.phone || '',
+        data.email || '',
+        data.capitalPriority || '',
+        data.capitalLocation || '',
+        data.capitalScale || '',
+        data.eveningIntent || '',
+        'Pending Review',
+        data.source || '',
+        ''
+      ]]);
+      SpreadsheetApp.flush();
+    } finally {
+      lock.releaseLock();
+    }
 
     return jsonOut_({ result: 'success' });
   } catch (err) {
