@@ -650,7 +650,17 @@
           form.reset();
           celebrateSuccess();
         })
-        .catch(() => {
+        .catch((err) => {
+          // short reason code so a failure can be diagnosed from a screenshot
+          console.error('Submit failed:', err);
+          let ref = document.getElementById('errorRef');
+          if (!ref) {
+            ref = document.createElement('div');
+            ref.id = 'errorRef';
+            ref.style.cssText = 'margin-top:6px;font-size:10px;opacity:.6;';
+            errorMsg.appendChild(ref);
+          }
+          ref.textContent = 'Ref: ' + ((err && (err.name + ': ' + err.message)) || 'unknown').slice(0, 80);
           errorMsg.style.display = 'block';
         })
         .finally(() => {
