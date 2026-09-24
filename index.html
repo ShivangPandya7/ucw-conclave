@@ -30,7 +30,7 @@
 
   #doorScene{position:fixed;inset:0;z-index:30;perspective:2200px;}
   .door-half{position:absolute;top:0;height:100%;width:50%;overflow:hidden;
-    background:var(--cover-bg);transition:transform 4.5s cubic-bezier(.65,0,.35,1);}
+    background:var(--cover-bg);transition:transform 4s cubic-bezier(.65,0,.35,1);}
   .door-half.door-left{left:0;}
   .door-half.door-right{right:0;}
   /* Percentage-based translate (relative to the half's OWN width, not a
@@ -432,7 +432,7 @@
       setTimeout(() => {
         room.classList.remove('visible');
         document.body.classList.remove('room-open');
-      }, 4600);
+      }, 4100);
     }
     const enterLinks = document.querySelectorAll('.enter-room-link');
     enterLinks.forEach((el) => {
