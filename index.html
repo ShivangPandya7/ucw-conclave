@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UpperCrust Wealth — The Conclave</title>
-<meta name="description" content="Curated for those who appreciate the finer things in life. Vadodara, 10 October 2026.">
+<meta name="description" content="For a few families. For the decades ahead. Vadodara, 10 October 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css?v=7">
 <style>
   /* ================= Cover (the "door") ================= */
@@ -37,41 +40,37 @@
   #doorScene.open .door-left{transform:translateX(-100%);}
   #doorScene.open .door-right{transform:translateX(100%);}
 
-  .cover-viewport{position:absolute;top:0;width:100vw;height:100%;display:flex;
+  .cover-viewport{position:absolute;top:0;width:200%;height:100%;display:flex;
     align-items:center;justify-content:center;}
 
   .vlines{position:absolute;inset:0;pointer-events:none;}
   .vlines span{position:absolute;top:0;bottom:0;width:1px;background:var(--cover-line);}
 
-  .cover-content{position:relative;z-index:1;text-align:center;max-width:900px;padding:0 24px;}
-
-  .cover-accent{position:relative;width:170px;height:44px;margin:0 auto 30px;}
-  .accent-glow{position:absolute;left:50%;top:10px;width:90px;height:90px;transform:translate(-50%,-50%);
-    background:radial-gradient(circle, rgba(240,210,120,.55), transparent 70%);filter:blur(6px);}
-  .accent-bar{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;height:2px;border-radius:2px;
-    background:linear-gradient(90deg,var(--cover-accent),var(--cover-accent2));}
-
-  .cover-title{font-family:Georgia,'Times New Roman',serif;font-weight:400;
-    font-size:clamp(28px,7vw,58px);letter-spacing:.08em;color:var(--cover-ink);line-height:1.15;margin-bottom:16px;}
-  .cover-subtitle{font-family:Georgia,serif;font-size:clamp(13px,2vw,18px);letter-spacing:.35em;
-    color:var(--cover-accent);margin-bottom:42px;}
-  .cover-tagline{font-family:Georgia,serif;font-style:italic;font-size:clamp(15px,2.3vw,22px);
-    color:#5b5346;margin-bottom:44px;line-height:1.5;}
-  .cover-meta{margin-bottom:64px;}
-  .cover-date{font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--cover-ink);margin-bottom:10px;}
-  .cover-venue{font-weight:700;font-size:clamp(12px,1.6vw,14px);letter-spacing:.2em;margin-bottom:14px;
-    display:inline-block;
-    background:linear-gradient(90deg,#8a6416 0%,#c8965a 20%,#fff4cd 35%,#c8965a 50%,#8a6416 70%,#7d5726 100%);
-    background-size:220% auto;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    color:#8a6416;animation:venue-shine 3.2s linear infinite;}
-  @keyframes venue-shine{
-    0%{background-position:-200% center;}
-    100%{background-position:200% center;}
-  }
-  .cover-seats{font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--cover-muted);}
+  /* Cover typography: light geometric sans (Jost, Futura-style) on the ivory
+     background, with gold accents */
+  :root{--cover-gold:#a8813f;--cover-font:'Jost','Futura','Century Gothic','Avenir Next',sans-serif;}
+  .cover-content{position:relative;z-index:1;text-align:center;width:100%;max-width:900px;box-sizing:border-box;padding:0 24px;
+    font-family:var(--cover-font);font-weight:300;}
+  .cover-title{font-family:var(--cover-font);font-weight:200;
+    font-size:clamp(46px,9vw,92px);letter-spacing:.01em;color:var(--cover-ink);line-height:1.05;margin-bottom:8px;}
+  .cover-subtitle{font-size:clamp(14px,2.6vw,26px);font-weight:300;letter-spacing:.2em;
+    color:var(--cover-gold);margin-bottom:clamp(14px,2.4vh,26px);}
+  .cover-tagline{font-size:clamp(14px,1.9vw,19px);font-weight:300;
+    color:#6b6252;line-height:1.7;margin-bottom:clamp(22px,5vh,54px);}
+  .cover-datewrap{margin-bottom:clamp(20px,4.5vh,46px);}
+  .cover-label{font-size:clamp(11px,1.5vw,15px);letter-spacing:.5em;color:#7a7160;margin-bottom:14px;padding-left:.5em;}
+  .cover-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:clamp(8px,1.6vh,16px);}
+  .cover-divider span{display:block;width:clamp(50px,11vw,140px);height:1px;background:var(--cover-gold);opacity:.7;}
+  .cover-divider i{display:block;width:9px;height:9px;border:1px solid var(--cover-gold);transform:rotate(45deg);}
+  .cover-date{font-size:clamp(30px,6.4vw,66px);font-weight:300;letter-spacing:.1em;color:var(--cover-gold);white-space:nowrap;}
+  .cover-time{font-size:clamp(13px,1.9vw,19px);letter-spacing:.3em;color:var(--cover-ink);margin-bottom:12px;padding-left:.3em;}
+  .cover-venue{font-size:clamp(12px,1.7vw,17px);letter-spacing:.3em;color:#7a7160;margin-bottom:clamp(14px,2.6vh,24px);padding-left:.3em;}
+  .cover-rule{width:46px;height:1px;background:var(--cover-gold);opacity:.8;margin:0 auto 14px;}
+  .cover-invite{font-size:clamp(10px,1.4vw,14px);letter-spacing:.34em;color:var(--cover-gold);
+    margin-bottom:clamp(20px,4vh,40px);padding-left:.34em;}
 
   .enter-room-link{position:relative;overflow:hidden;isolation:isolate;
-    display:inline-flex;align-items:center;gap:10px;font-weight:700;
+    display:inline-flex;align-items:center;gap:10px;font-family:var(--cover-font);font-weight:500;
     font-size:clamp(15px,2vw,19px);letter-spacing:.1em;color:#fdf0d5;text-decoration:none;
     padding:15px 36px;border-radius:34px;border:1.5px solid rgba(230,192,127,.55);
     background:linear-gradient(135deg,#8c2f3a 0%,#6b1f2a 55%,#4a1420 100%);
@@ -92,19 +91,12 @@
   .enter-arrow{display:inline-block;transition:transform .3s ease;position:relative;z-index:1;}
   .enter-room-link:hover .enter-arrow,.enter-room-link.hovering .enter-arrow{transform:translateX(5px);}
 
-  /* Shown instead of the CTA once a registration has gone through */
-  .save-the-date{display:none;font-weight:700;font-size:clamp(15px,2vw,19px);
-    letter-spacing:.35em;color:var(--cover-accent);}
+  /* After a registration the CTA is replaced by the confirmation note */
   body.registered .enter-room-link{display:none;}
-  body.registered .save-the-date{display:inline-block;}
-  .await-confirm{display:none;margin-top:18px;font-family:Georgia,serif;font-style:italic;
-    font-size:clamp(13px,1.8vw,16px);color:var(--cover-muted);}
+  .await-confirm{display:none;margin-top:6px;font-family:var(--cover-font);font-weight:300;
+    font-size:clamp(13px,1.8vw,17px);letter-spacing:.06em;color:#6b6252;}
   body.registered .await-confirm{display:block;}
 
-  @media (max-width:640px){
-    .cover-meta{margin-bottom:50px;}
-    .cover-tagline{margin-bottom:36px;}
-  }
 
   /* ================= Room (registration) ================= */
   #room{visibility:hidden;}
@@ -383,17 +375,19 @@
       <div class="cover-viewport" style="left:0;">
             <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
             <div class="cover-content">
-              <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
-              <h1 class="cover-title">UPPERCRUST WEALTH</h1>
-              <div class="cover-subtitle">THE CONCLAVE</div>
-              <p class="cover-tagline">Curated for those who appreciate the finer things in life.</p>
-              <div class="cover-meta">
-                <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
-                <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 1:30 PM</div>
-                <div class="cover-seats">A limited number of seats remain.</div>
+              <h1 class="cover-title">UpperCrust</h1>
+              <div class="cover-subtitle">WEALTH CONCLAVE &rsquo;26</div>
+              <p class="cover-tagline">For a few families.<br>For the decades ahead.</p>
+              <div class="cover-datewrap">
+                <div class="cover-label">SAVE THE DATE</div>
+                <div class="cover-divider"><span></span><i></i><span></span></div>
+                <div class="cover-date">10 . 10 . 2026</div>
               </div>
+              <div class="cover-time">9:30 AM ONWARDS</div>
+              <div class="cover-venue">WAVES CLUB &middot; VADODARA</div>
+              <div class="cover-rule"></div>
+              <div class="cover-invite">BY INVITATION ONLY</div>
               <a href="#" class="enter-room-link">ENTER THE TOP 1% <span class="enter-arrow">→</span></a>
-              <div class="save-the-date">SAVE THE DATE</div>
               <div class="await-confirm">Await your confirmation &mdash; our team will reach out to you.</div>
             </div>
       </div>
@@ -402,17 +396,19 @@
       <div class="cover-viewport" style="right:0;">
             <div class="vlines"><span style="left:14%"></span><span style="left:50%"></span><span style="left:86%"></span></div>
             <div class="cover-content">
-              <div class="cover-accent"><div class="accent-glow"></div><div class="accent-bar"></div></div>
-              <h1 class="cover-title">UPPERCRUST WEALTH</h1>
-              <div class="cover-subtitle">THE CONCLAVE</div>
-              <p class="cover-tagline">Curated for those who appreciate the finer things in life.</p>
-              <div class="cover-meta">
-                <div class="cover-date">VADODARA &middot; 10 OCTOBER 2026</div>
-                <div class="cover-venue">WAVES CLUB &middot; 9:00 AM &ndash; 1:30 PM</div>
-                <div class="cover-seats">A limited number of seats remain.</div>
+              <h1 class="cover-title">UpperCrust</h1>
+              <div class="cover-subtitle">WEALTH CONCLAVE &rsquo;26</div>
+              <p class="cover-tagline">For a few families.<br>For the decades ahead.</p>
+              <div class="cover-datewrap">
+                <div class="cover-label">SAVE THE DATE</div>
+                <div class="cover-divider"><span></span><i></i><span></span></div>
+                <div class="cover-date">10 . 10 . 2026</div>
               </div>
+              <div class="cover-time">9:30 AM ONWARDS</div>
+              <div class="cover-venue">WAVES CLUB &middot; VADODARA</div>
+              <div class="cover-rule"></div>
+              <div class="cover-invite">BY INVITATION ONLY</div>
               <a href="#" class="enter-room-link">ENTER THE TOP 1% <span class="enter-arrow">→</span></a>
-              <div class="save-the-date">SAVE THE DATE</div>
               <div class="await-confirm">Await your confirmation &mdash; our team will reach out to you.</div>
             </div>
       </div>
