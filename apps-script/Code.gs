@@ -109,6 +109,31 @@ function doPost(e) {
   }
 }
 
+// ---- Keep-warm timer -------------------------------------------------------
+// Apps Script goes "cold" after a few idle minutes and the next visitor then
+// waits several extra seconds. This runs the same sheet lookup on a timer so
+// the script and the spreadsheet stay warm. Run installKeepWarmTrigger() ONCE
+// from the editor; it is safe to run again (it replaces the old trigger).
+function keepWarm() {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) sheet.getRange(2, 4, lastRow - 1, 1).getValues();
+}
+
+function installKeepWarmTrigger() {
+  ScriptApp.getProjectTriggers().forEach((t) => {
+    if (t.getHandlerFunction() === 'keepWarm') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('keepWarm').timeBased().everyMinutes(5).create();
+}
+
+// Optional: run to stop the keep-warm timer.
+function removeKeepWarmTrigger() {
+  ScriptApp.getProjectTriggers().forEach((t) => {
+    if (t.getHandlerFunction() === 'keepWarm') ScriptApp.deleteTrigger(t);
+  });
+}
+
 function doGet() {
   return jsonOut_({ status: 'ok', message: 'UCW Conclave registration endpoint is live' });
 }
