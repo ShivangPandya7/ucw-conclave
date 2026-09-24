@@ -510,6 +510,7 @@
 
     // ---- Coin shower + "Thank You" celebration on successful submit ----
     const SHOWER_DURATION_MS = 4000;
+    const THANKS_HOLD_MS = 6000; // how long the Thank You screen stays before the doors close
     function spawnCoinShower(count) {
       const layer = document.createElement('div');
       layer.className = 'coin-shower';
@@ -551,7 +552,7 @@
         // the overlay is the same colour as the doors, so it can stay up until
         // they have closed and then fade away, revealing the cover
         setTimeout(() => thanksOverlay.classList.remove('show'), 2300);
-      }, SHOWER_DURATION_MS);
+      }, THANKS_HOLD_MS);
     }
 
     // Under heavy load Apps Script can be slow or drop a request, so every
