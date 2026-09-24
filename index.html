@@ -177,17 +177,17 @@
     8%{opacity:1;}
     100%{transform:translateY(110vh) rotate(var(--rot));opacity:1;}
   }
-  .thanks-overlay{position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;
-    pointer-events:none;opacity:0;transition:opacity .5s ease;
-    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.6),transparent 65%);}
-  .thanks-overlay.show{opacity:1;}
-  .thanks-overlay .thanks-text{font-family:Georgia,serif;font-size:34px;letter-spacing:7px;text-transform:uppercase;
-    color:#8a6416;text-shadow:0 0 24px rgba(255,255,255,.95);
-    opacity:0;transform:scale(.85);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1);}
-  .thanks-overlay.show .thanks-text{opacity:1;transform:scale(1);}
-  @media (max-width:640px){
-    .thanks-overlay .thanks-text{font-size:22px;letter-spacing:4px;}
-  }
+  .thanks-overlay{position:fixed;inset:0;z-index:59;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:0 24px;pointer-events:none;opacity:0;background:var(--cover-bg);
+    font-family:var(--cover-font);transition:opacity 1s ease;}
+  .thanks-overlay.show{opacity:1;transition:opacity 1.6s ease;}
+  .thanks-overlay .thanks-text{font-family:var(--cover-font);font-weight:200;font-size:clamp(34px,7vw,64px);letter-spacing:.25em;
+    text-transform:uppercase;color:#2a2620;padding-left:.25em;
+    opacity:0;transform:scale(.92);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1);}
+  .thanks-overlay .thanks-sub{margin-top:18px;font-weight:300;font-size:clamp(13px,2.4vw,18px);letter-spacing:.06em;
+    color:#5c5548;line-height:1.6;max-width:32em;opacity:0;transition:opacity .8s ease;}
+  .thanks-overlay.show .thanks-text{opacity:1;transform:scale(1);transition-delay:.9s;}
+  .thanks-overlay.show .thanks-sub{opacity:1;transition-delay:1.4s;}
 </style>
 </head>
 <body>
@@ -367,7 +367,7 @@
     </div>
   </div>
 
-  <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div></div>
+  <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div><div class="thanks-sub">Await your confirmation &mdash; our team will reach out to you.</div></div>
 
   <!-- ================= The door: cover screen, duplicated left/right for the split-open slide effect ================= -->
   <div id="doorScene">
@@ -541,7 +541,6 @@
       spawnCoinShower(46);
       setTimeout(() => spawnCoinShower(30), 400);
       thanksOverlay.classList.add('show');
-      setTimeout(() => thanksOverlay.classList.remove('show'), 3600);
       form.classList.add('submitted');
 
       // continuous vibration for the whole shower
@@ -554,6 +553,9 @@
       setTimeout(() => {
         document.body.classList.add('registered');
         closeDoor();
+        // the overlay is the same colour as the doors, so it can stay up until
+        // they have closed and then fade away, revealing the cover
+        setTimeout(() => thanksOverlay.classList.remove('show'), 2300);
       }, SHOWER_DURATION_MS);
     }
 
