@@ -140,6 +140,9 @@
 
   .submit-btn{width:100%;border-radius:8px;font-size:13px;letter-spacing:1px;margin-top:0;}
   .submit-btn[disabled]{cursor:wait;}
+  .reveal-block{display:none;}
+  .reveal-block.show{display:block;animation:revealIn .35s ease both;}
+  @keyframes revealIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
   .step-next-btn{border-radius:8px;font-size:13px;letter-spacing:1px;padding:12px 20px;}
 
   .back-link{display:block;text-align:center;margin-top:18px;font-size:12px;color:var(--text-faint);
@@ -345,7 +348,37 @@
               </div>
               <div class="step-nav">
                 <button type="button" class="ghost-btn step-back-btn">Back</button>
-                <button type="submit" class="submit-btn step-next-btn" id="submitBtn">Submit Application</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="7">
+              <div class="input-group">
+                <label for="referredBy">Who referred you?</label>
+                <select id="referredBy" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="UpperCrust Wealth employee">UpperCrust Wealth employee</option>
+                  <option value="Your friend">Your friend</option>
+                  <option value="None">None</option>
+                </select>
+              </div>
+              <div class="input-group reveal-block" id="referrerBlock">
+                <label for="referrerName">By who? - Name</label>
+                <input type="text" id="referrerName" disabled>
+              </div>
+              <div class="input-group reveal-block" id="socialBlock">
+                <label for="socialMedia">Which social media?</label>
+                <select id="socialMedia" disabled>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="Website">Website</option>
+                </select>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="submit" class="submit-btn step-next-btn" id="submitBtn" style="display:none">Submit Application</button>
               </div>
             </div>
 
@@ -489,7 +522,11 @@
       const input = step.querySelector('input');
       if (input) {
         input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') { e.preventDefault(); goNext(); }
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (current === totalSteps - 1) { if (submitBtn.style.display !== 'none') form.requestSubmit(); }
+            else goNext();
+          }
         });
       }
     });
@@ -507,6 +544,33 @@
     }
 
     showStep(0);
+    // ---- Referral step: "Who referred you?" -> follow-up question, then Submit ----
+    const referredBy = document.getElementById('referredBy');
+    const referrerBlock = document.getElementById('referrerBlock');
+    const referrerName = document.getElementById('referrerName');
+    const socialBlock = document.getElementById('socialBlock');
+    const socialMedia = document.getElementById('socialMedia');
+    function updateReferral() {
+      const v = referredBy.value;
+      const isPerson = v === 'UpperCrust Wealth employee' || v === 'Your friend';
+      const isNone = v === 'None';
+      referrerBlock.classList.toggle('show', isPerson);
+      referrerName.disabled = !isPerson;
+      referrerName.required = isPerson;
+      socialBlock.classList.toggle('show', isNone);
+      socialMedia.disabled = !isNone;
+      socialMedia.required = isNone;
+      const ready = (isPerson && referrerName.value.trim() !== '') || (isNone && socialMedia.value !== '');
+      submitBtn.style.display = ready ? '' : 'none';
+    }
+    ['change', 'input'].forEach((ev) => {
+      referredBy.addEventListener(ev, updateReferral);
+      referrerName.addEventListener(ev, updateReferral);
+      socialMedia.addEventListener(ev, updateReferral);
+    });
+    form.addEventListener('reset', () => setTimeout(updateReferral, 0));
+    updateReferral();
+
 
     // ---- Coin shower + "Thank You" celebration on successful submit ----
     const SHOWER_DURATION_MS = 4000;
@@ -617,6 +681,9 @@
         capitalLocation: document.getElementById('capitalLocation').value,
         capitalScale: document.getElementById('capitalScale').value,
         eveningIntent: document.getElementById('eveningIntent').value,
+        referredBy: referredBy.value,
+        referrerName: referrerName.disabled ? '' : referrerName.value.trim(),
+        socialMedia: socialMedia.disabled ? '' : socialMedia.value,
         source: 'conclave-site',
         submittedAt: new Date().toISOString()
       };

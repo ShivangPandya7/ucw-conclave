@@ -8,7 +8,8 @@
 const SHEET_NAME = 'Registrations';
 const HEADERS = [
   'Timestamp', 'Full Name', 'Phone', 'Email', 'Capital Priority',
-  'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent'
+  'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent',
+  'Referred By', 'Referrer Name', 'Social Media'
 ];
 
 // One-time setup: creates the sheet + header row and formats the Phone column
@@ -17,11 +18,9 @@ function setupSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADERS);
-    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
-    sheet.setFrozenRows(1);
-  }
+  // (re)write the header row so newly added columns get their titles
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
+  sheet.setFrozenRows(1);
   // plain text for the whole Phone column so "+" numbers never become formulas
   sheet.getRange('C:C').setNumberFormat('@');
   return sheet;
@@ -95,7 +94,10 @@ function doPost(e) {
         data.eveningIntent || '',
         'Pending Review',
         data.source || '',
-        ''
+        '',
+        data.referredBy || '',
+        data.referrerName || '',
+        data.socialMedia || ''
       ]);
       // commit before releasing the lock so the next request sees this row
       SpreadsheetApp.flush();
