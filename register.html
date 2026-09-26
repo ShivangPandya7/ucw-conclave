@@ -48,6 +48,14 @@
   /* base shiny gold styling comes from styles.css's shared .submit-btn rule */
   .submit-btn{width:100%;border-radius:8px;font-size:13px;letter-spacing:1px;margin-top:0;}
   .submit-btn[disabled]{cursor:wait;}
+  .check-group{display:flex;flex-direction:column;gap:8px;}
+  .input-group .check-group label.check-opt{display:flex;align-items:center;gap:12px;margin:0;padding:11px 14px;
+    text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:400;line-height:1.35;color:#2b2417;cursor:pointer;
+    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
+  .input-group .check-group label.check-opt:hover{background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
+  .input-group .check-group label.check-opt:has(input:checked){border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);box-shadow:0 0 8px rgba(168,118,60,.25);}
+  .input-group .check-opt input[type=checkbox]{flex:none;width:18px;height:18px;padding:0;margin:0;background:none;box-shadow:none;border-radius:4px;accent-color:#a8813f;}
+  .check-hint{font-size:11px;color:#7a7160;margin:-2px 0 8px;}
   .reveal-block{display:none;}
   .reveal-block.show{display:block;animation:revealIn .35s ease both;}
   @keyframes revealIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
@@ -209,17 +217,16 @@
 
           <div class="form-step" data-step="4">
             <div class="input-group">
-              <label for="capitalLocation">Where is most of your money invested today?</label>
-              <select id="capitalLocation" required>
-                <option value="" disabled selected>Select one</option>
-                <option value="Only stocks">Only stocks</option>
-                <option value="Stocks and mutual funds (public markets)">Stocks and mutual funds (public markets)</option>
-                <option value="Fixed income and bonds">Fixed income and bonds</option>
-                <option value="Mostly gold and silver">Mostly gold and silver</option>
-                <option value="Direct investing in start-ups">Direct investing in start-ups</option>
-                <option value="Real estate">Real estate</option>
-                <option value="Spread across all of these">Spread across all of these</option>
-              </select>
+              <label id="capitalLocationLabel">Where is most of your money invested today?</label>
+              <div class="check-hint">Tick all that apply</div>
+              <div class="check-group" id="capitalLocationGroup" role="group" aria-labelledby="capitalLocationLabel">
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Only stocks" data-group="1"><span>Only stocks</span></label>
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Stocks and mutual funds (public markets)"><span>Stocks and mutual funds (public markets)</span></label>
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Fixed income and bonds"><span>Fixed income and bonds</span></label>
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Mostly gold and silver"><span>Mostly gold and silver</span></label>
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Direct investing in start-ups"><span>Direct investing in start-ups</span></label>
+                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Real estate"><span>Real estate</span></label>
+              </div>
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
@@ -337,7 +344,7 @@
 
     function goNext() {
       const field = steps[current].querySelector('input, select, textarea');
-      if (field && field.hasAttribute('required') && !field.checkValidity()) {
+      if (field && (field.hasAttribute('required') || field.dataset.group) && !field.checkValidity()) {
         field.reportValidity();
         return;
       }
@@ -384,6 +391,16 @@
     }
 
     showStep(0);
+    // ---- "Where is your money invested" is a tick-all-that-apply group ----
+    const locBoxes = Array.from(document.querySelectorAll('input[name="capitalLocation"]'));
+    function updateLocation() {
+      const any = locBoxes.some((b) => b.checked);
+      locBoxes[0].setCustomValidity(any ? '' : 'Please tick at least one option');
+    }
+    locBoxes.forEach((b) => b.addEventListener('change', updateLocation));
+    form.addEventListener('reset', () => setTimeout(updateLocation, 0));
+    updateLocation();
+
     // ---- Referral step: "Who referred you?" -> follow-up question, then Submit ----
     const referredBy = document.getElementById('referredBy');
     const referrerBlock = document.getElementById('referrerBlock');
@@ -506,7 +523,7 @@
         phone: document.getElementById('phone').value.trim(),
         email: document.getElementById('email').value.trim(),
         capitalPriority: document.getElementById('capitalPriority').value,
-        capitalLocation: document.getElementById('capitalLocation').value,
+        capitalLocation: locBoxes.filter((b) => b.checked).map((b) => b.value).join(', '),
         capitalScale: document.getElementById('capitalScale').value,
         eveningIntent: document.getElementById('eveningIntent').value,
         referredBy: referredBy.value,
